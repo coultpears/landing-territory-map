@@ -12,7 +12,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 .hdr p{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px}
 .hdr-r{font-size:12px;font-weight:700;color:#1A61D9;letter-spacing:1.5px;text-transform:uppercase}
 .map-area{padding:24px 36px 8px;position:relative}
-#tooltip{position:absolute;background:#15192D;color:#fff;padding:12px 18px;border-radius:8px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.6;max-width:340px}
+#tooltip{position:absolute;background:#15192D;color:#fff;padding:12px 18px;border-radius:8px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.6;max-width:360px}
 #tooltip strong{color:#7EB5F5}
 #tooltip .tt-rep{color:#fff;font-weight:600;margin-bottom:4px}
 #tooltip .tt-divider{border-top:1px solid rgba(255,255,255,0.12);margin:6px 0}
@@ -22,15 +22,12 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 #tooltip .tt-total{display:flex;justify-content:space-between;gap:16px;font-size:11px;font-weight:700;color:#fff;margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.12)}
 .state-path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .15s}
 .state-path:hover{opacity:.82;stroke-width:1.5}
-
-/* Stats bar */
 .stats{display:flex;justify-content:center;gap:0;padding:0 36px;border-bottom:1px solid #ECEDF0}
 .stat-card{flex:1;text-align:center;padding:20px 16px;position:relative}
 .stat-card:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:#ECEDF0}
 .stat-val{font-size:28px;font-weight:700;color:#15192D;letter-spacing:-0.5px}
 .stat-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
 .stat-sub{font-size:10px;color:#BBB;margin-top:2px}
-
 .leg{padding:14px 36px 24px;display:flex;flex-wrap:wrap;gap:0;justify-content:center;border-top:1px solid #ECEDF0}
 .li{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:6px;transition:background .15s}
 .li:hover{background:#F5F6F8}
@@ -43,7 +40,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 <body>
 <div class="wrap">
   <div class="hdr">
-    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales — March 2026</p></div>
+    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales &mdash; March 2026</p></div>
     <div class="hdr-r">Landing</div>
   </div>
   <div class="map-area" id="mapArea">
@@ -54,31 +51,24 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
   <div class="leg" id="leg"></div>
   <div class="footnote">
     States with diagonal stripes indicate shared coverage between multiple reps.<br>
-    TX: Wells Davis (DFW & Austin) / John LaVanway (Houston & San Antonio)<br>
-    FL: Scout Bishop (statewide excl. Fort Lauderdale & Miami) / Ashtyn Garner (Fort Lauderdale) / Renato Lagomarsino (Miami)
+    TX: Wells Davis (DFW &amp; Austin) / John LaVanway (Houston &amp; San Antonio)<br>
+    FL: Scout Bishop (statewide excl. Fort Lauderdale &amp; Miami) / Ashtyn Garner (Fort Lauderdale) / Renato Lagomarsino (Miami)
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
-const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
+var FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
 
-const repColors={
-  "Jack Thomasson":"#1A61D9",
-  "Wells Davis":"#156082",
-  "John LaVanway":"#1B95B0",
-  "Scout Bishop":"#2D3654",
-  "Ashtyn Garner":"#E67E22",
-  "Renato Lagomarsino":"#D35400",
-  "Sophia Nadler":"#8E44AD",
-  "Richard Baugh":"#27AE60",
-  "Raegan Harris":"#C0392B",
-  "Ghislain Cossio":"#7D3C98",
-  "Nolan Moran":"#F1C40F"
+var repColors={
+  "Jack Thomasson":"#1A61D9","Wells Davis":"#156082","John LaVanway":"#1B95B0",
+  "Scout Bishop":"#2D3654","Ashtyn Garner":"#E67E22","Renato Lagomarsino":"#D35400",
+  "Sophia Nadler":"#8E44AD","Richard Baugh":"#27AE60","Raegan Harris":"#C0392B",
+  "Ghislain Cossio":"#7D3C98","Nolan Moran":"#F1C40F"
 };
 
-const stateAssignments={
+var stateAssignments={
   "AL":"Jack Thomasson","AK":"Scout Bishop","AZ":"Raegan Harris","AR":"Jack Thomasson",
   "CA":"Raegan Harris","CO":"Nolan Moran","CT":"Ghislain Cossio","DE":"Ghislain Cossio",
   "DC":"Scout Bishop","GA":"Scout Bishop","HI":"Raegan Harris","ID":"Sophia Nadler",
@@ -93,58 +83,56 @@ const stateAssignments={
   "VA":"Scout Bishop","WA":"Sophia Nadler","WV":"Scout Bishop","WI":"Richard Baugh","WY":"Scout Bishop"
 };
 
-const splitStates={
-  "TX":{
-    reps:"Wells Davis — DFW & Austin / John LaVanway — Houston & San Antonio"
-  },
-  "FL":{
-    reps:"Scout Bishop — Statewide (excl. FtL & Miami) / Ashtyn Garner — Fort Lauderdale / Renato Lagomarsino — Miami"
-  }
+var splitStates={
+  "TX":{reps:"Wells Davis \u2014 DFW & Austin / John LaVanway \u2014 Houston & San Antonio"},
+  "FL":{reps:"Scout Bishop \u2014 Statewide (excl. FtL & Miami) / Ashtyn Garner \u2014 Fort Lauderdale / Renato Lagomarsino \u2014 Miami"}
 };
 
-// Market data from Launch Dashboard — Import of new deals tab
-const stateData={
-  "AL":{markets:{"Birmingham":{2024:65,2025:10},"Huntsville":{2024:48,2025:76}}},
-  "AZ":{markets:{"Phoenix":{2024:49,2025:66},"Tucson":{2024:9,2025:10}}},
-  "AR":{markets:{"Little Rock":{2025:9}}},
-  "CA":{markets:{"San Diego":{2025:17}}},
-  "CO":{markets:{"Denver":{2024:14,2025:48},"Fort Collins":{2024:10,2025:15}}},
-  "DC":{markets:{"Washington":{2024:75,2025:53}}},
-  "FL":{markets:{"Cape Coral":{2024:35},"Daytona Beach":{2025:5},"Fort Lauderdale":{2024:11,2025:4},"Fort Myers":{2024:15,2025:68},"Gainesville":{2024:43,2025:14},"Jacksonville":{2024:55,2025:50},"Melbourne":{2024:43,2025:10},"Miami":{2024:15},"Orlando":{2024:35,2025:50},"Port Charlotte":{2024:35},"Sarasota":{2024:15,2025:15},"St. Petersburg":{2024:55,2025:25},"Tampa":{2024:32,2025:5},"West Palm Beach":{2024:59},"Wildwood":{2025:15},"Vero Beach":{2025:5},"Saint Augustine":{2025:5}}},
-  "GA":{markets:{"Atlanta":{2024:80,2025:120},"Savannah":{2024:10,2025:13}}},
-  "IL":{markets:{"Chicago":{2024:44,2025:19}}},
-  "IN":{markets:{"Indianapolis":{2024:49,2025:50},"Fort Wayne":{2025:11}}},
-  "KS":{markets:{"Kansas City":{2024:7,2025:20}}},
-  "LA":{markets:{"Baton Rouge":{2024:10},"New Orleans":{2025:10}}},
-  "MD":{markets:{"Baltimore":{2025:14}}},
-  "MA":{markets:{"Boston":{2025:10}}},
-  "MI":{markets:{"Detroit":{2024:30,2025:10}}},
-  "MO":{markets:{"Kansas City":{2024:7},"St. Louis":{2024:37,2025:58},"Springfield":{2025:5}}},
-  "NC":{markets:{"Asheville":{2025:20},"Charlotte":{2024:30,2025:120},"Raleigh":{2024:34,2025:115},"Wilmington":{2024:26,2025:20}}},
-  "NV":{markets:{"Las Vegas":{2024:41,2025:68},"Reno":{2024:5,2025:5}}},
-  "NY":{markets:{"New York":{2024:10,2025:25},"Ithaca":{2025:16},"Buffalo":{2025:10}}},
-  "OH":{markets:{"Cincinnati":{2024:20},"Cleveland":{2024:56},"Columbus":{2024:13,2025:20}}},
-  "OK":{markets:{"Oklahoma City":{2024:10},"Tulsa":{2024:15,2025:5}}},
-  "OR":{markets:{"Portland":{2024:29,2025:15}}},
-  "PA":{markets:{"Philadelphia":{2024:32,2025:31},"Pittsburgh":{2025:5}}},
-  "SC":{markets:{"Charleston":{2024:68,2025:52},"Greenville":{2024:5,2025:15}}},
-  "TN":{markets:{"Chattanooga":{2025:10},"Dayton":{2024:10},"Knoxville":{2025:10},"Memphis":{2024:50,2025:43},"Nashville":{2024:41,2025:53}}},
-  "TX":{markets:{"Austin":{2024:162,2025:145},"Dallas":{2024:95,2025:173},"Fort Worth":{2024:85,2025:75},"Houston":{2024:107,2025:152},"San Antonio":{2024:97,2025:135}}},
-  "UT":{markets:{"Salt Lake City":{2024:32,2025:28}}},
-  "VA":{markets:{"Richmond":{2024:45,2025:5},"Norfolk":{2025:5}}},
-  "WA":{markets:{"Seattle":{2024:4,2025:5}}},
-  "WI":{markets:{"Milwaukee":{2025:7}}}
+// Market data from Launch Dashboard - Import of new deals tab (as of March 2026)
+var stateData={
+  "AL":{markets:{"Birmingham":{2024:75,2025:10,2026:5},"Huntsville":{2024:50,2025:81,2026:95},"Mobile":{2024:10},"Orange Beach":{2025:5}}},
+  "AR":{markets:{"Little Rock":{2025:41}}},
+  "AZ":{markets:{"Phoenix":{2024:49,2025:91,2026:29},"Tucson":{2024:9,2025:15},"Mesa":{2025:10}}},
+  "CA":{markets:{"San Diego":{2025:17},"Los Angeles":{2025:15}}},
+  "CO":{markets:{"Denver":{2024:21,2025:80,2026:20},"Fort Collins":{2024:10,2025:15},"Colorado Springs":{2025:25}}},
+  "CT":{markets:{"Hartford":{2025:28,2026:5},"New Haven":{2025:16,2026:18},"Stratford":{2025:2}}},
+  "DC":{markets:{"Washington":{2024:75,2025:91,2026:61}}},
+  "FL":{markets:{"Cape Coral":{2024:35},"Daytona Beach":{2025:10},"Fort Lauderdale":{2024:21,2025:9,2026:3},"Fort Myers":{2024:15,2025:79,2026:31},"Gainesville":{2024:43,2025:18},"Jacksonville":{2024:70,2025:45,2026:10},"Melbourne":{2024:43,2025:23,2026:13},"Miami":{2024:22,2025:35,2026:20},"Orlando":{2024:40,2025:73,2026:43},"Port Charlotte":{2024:35},"Sarasota":{2024:15,2025:35},"St. Petersburg":{2024:70,2025:20},"Tampa":{2024:32,2025:10,2026:17},"West Palm Beach":{2024:59},"Wildwood":{2025:15},"Pensacola":{2025:23,2026:15},"Lakeland":{2025:20},"Naples":{2026:20},"Tallahassee":{2026:10},"Vero Beach":{2025:5},"Ocala":{2025:12},"Saint Augustine":{2025:5}}},
+  "GA":{markets:{"Atlanta":{2024:64,2025:151,2026:10},"Savannah":{2024:15,2025:36,2026:15},"Rome":{2025:5}}},
+  "IL":{markets:{"Chicago":{2024:38,2025:21,2026:10}}},
+  "IN":{markets:{"Indianapolis":{2024:49,2025:70,2026:13},"Fort Wayne":{2025:11}}},
+  "KS":{markets:{"Kansas City":{2024:7,2025:20},"Wichita":{2025:5}}},
+  "KY":{markets:{"Louisville":{2026:8}}},
+  "LA":{markets:{"Baton Rouge":{2024:10},"New Orleans":{2025:15}}},
+  "MA":{markets:{"Boston":{2025:10},"Springfield":{2025:5}}},
+  "MD":{markets:{"Baltimore":{2025:19,2026:5},"Columbia":{2026:5}}},
+  "MI":{markets:{"Detroit":{2024:40,2025:13}}},
+  "MO":{markets:{"Kansas City":{2024:7,2025:20},"St. Louis":{2024:59,2025:78},"Springfield":{2025:10}}},
+  "MT":{markets:{"Bozeman":{2025:5},"Billings":{2025:10}}},
+  "NC":{markets:{"Asheville":{2025:20,2026:10},"Charlotte":{2024:30,2025:152,2026:6},"Raleigh":{2024:31,2025:95,2026:8},"Wilmington":{2024:36,2025:20,2026:5},"Hickory":{2026:10}}},
+  "NV":{markets:{"Las Vegas":{2024:49,2025:62,2026:5},"Reno":{2024:10,2025:5}}},
+  "NY":{markets:{"New York":{2024:10,2025:25,2026:15},"Ithaca":{2025:16},"Buffalo":{2025:10},"Albany":{2025:5}}},
+  "OH":{markets:{"Cincinnati":{2024:30,2025:10},"Cleveland":{2024:56,2025:10,2026:3},"Columbus":{2024:13,2025:33}}},
+  "OK":{markets:{"Oklahoma City":{2024:10,2025:16},"Tulsa":{2024:15,2025:31}}},
+  "OR":{markets:{"Portland":{2024:43,2025:35}}},
+  "PA":{markets:{"Philadelphia":{2024:22,2025:26,2026:9},"Pittsburgh":{2025:5,2026:5}}},
+  "SC":{markets:{"Charleston":{2024:63,2025:37},"Greenville":{2024:45,2025:25,2026:3},"Myrtle Beach":{2025:55,2026:5}}},
+  "TN":{markets:{"Chattanooga":{2025:10,2026:8},"Knoxville":{2025:30},"Memphis":{2024:50,2025:68},"Nashville":{2024:47,2025:93,2026:28},"Dayton":{2024:10}}},
+  "TX":{markets:{"Austin":{2024:138,2025:260,2026:55},"Dallas":{2024:85,2025:259,2026:62},"Fort Worth":{2024:95,2025:67,2026:32},"Houston":{2024:137,2025:236,2026:68},"San Antonio":{2024:77,2025:170,2026:30},"Corpus Christi":{2025:20}}},
+  "UT":{markets:{"Salt Lake City":{2024:37,2025:35,2026:15}}},
+  "VA":{markets:{"Richmond":{2024:64,2025:15},"Norfolk":{2025:10},"Charlottesville":{2025:8}}},
+  "WA":{markets:{"Seattle":{2024:6,2025:44},"Richland":{2025:5}}},
+  "WI":{markets:{"Milwaukee":{2025:13}}}
 };
 
-// Compute totals
-let grandTotal=0, total2024=0, total2025=0;
-const stateTotals={};
-Object.entries(stateData).forEach(([st,d])=>{
-  let stTotal=0;
-  Object.values(d.markets).forEach(m=>{
-    const u24=m[2024]||0, u25=m[2025]||0;
-    total2024+=u24; total2025+=u25;
-    stTotal+=u24+u25;
+var grandTotal=0,total2024=0,total2025=0,total2026=0;
+var stateTotals={};
+Object.entries(stateData).forEach(function(e){
+  var st=e[0],d=e[1],stTotal=0;
+  Object.values(d.markets).forEach(function(m){
+    var u24=m[2024]||0,u25=m[2025]||0,u26=m[2026]||0;
+    total2024+=u24;total2025+=u25;total2026+=u26;
+    stTotal+=u24+u25+u26;
   });
   stateTotals[st]=stTotal;
   grandTotal+=stTotal;
@@ -152,120 +140,107 @@ Object.entries(stateData).forEach(([st,d])=>{
 
 function getColor(abbr){
   if(splitStates[abbr])return null;
-  const rep=stateAssignments[abbr];
+  var rep=stateAssignments[abbr];
   return rep?repColors[rep]:"#DDD";
 }
 
 function getTooltip(abbr){
-  const data=stateData[abbr];
-  const isSplit=!!splitStates[abbr];
-  const rep=stateAssignments[abbr];
-
-  // Rep line
-  let html='<div class="tt-rep"><strong>'+abbr+'</strong>';
+  var data=stateData[abbr];
+  var isSplit=!!splitStates[abbr];
+  var rep=stateAssignments[abbr];
+  var html='<div class="tt-rep"><strong>'+abbr+'</strong>';
   if(isSplit){
     html+='</div><div style="font-size:10.5px;color:rgba(255,255,255,0.85);line-height:1.5">';
-    splitStates[abbr].reps.split(' / ').forEach(r=>{html+=r+'<br>';});
+    splitStates[abbr].reps.split(' / ').forEach(function(r){html+=r+'<br>';});
     html+='</div>';
   } else {
-    html+=' — '+(rep||'Unassigned')+'</div>';
+    html+=' \u2014 '+(rep||'Unassigned')+'</div>';
   }
-
-  // Market data
-  if(data && Object.keys(data.markets).length>0){
+  if(data&&Object.keys(data.markets).length>0){
     html+='<div class="tt-divider"></div>';
-    const sorted=Object.entries(data.markets).sort((a,b)=>{
-      const ta=(a[1][2024]||0)+(a[1][2025]||0);
-      const tb=(b[1][2024]||0)+(b[1][2025]||0);
+    var sorted=Object.entries(data.markets).sort(function(a,b){
+      var ta=(a[1][2024]||0)+(a[1][2025]||0)+(a[1][2026]||0);
+      var tb=(b[1][2024]||0)+(b[1][2025]||0)+(b[1][2026]||0);
       return tb-ta;
     });
-    sorted.forEach(([market,units])=>{
-      const total=(units[2024]||0)+(units[2025]||0);
+    sorted.forEach(function(entry){
+      var market=entry[0],units=entry[1];
+      var total=(units[2024]||0)+(units[2025]||0)+(units[2026]||0);
       html+='<div class="tt-market"><span class="tt-market-name">'+market+'</span><span class="tt-units">'+total.toLocaleString()+' units</span></div>';
     });
-    const stTotal=stateTotals[abbr]||0;
+    var stTotal=stateTotals[abbr]||0;
     html+='<div class="tt-total"><span>Total</span><span>'+stTotal.toLocaleString()+' units</span></div>';
   }
-
   return html;
 }
 
-// Stats bar
-const statsEl=document.getElementById("stats");
+var statsEl=document.getElementById("stats");
 [
   {val:grandTotal.toLocaleString(),label:"Total Units",sub:"All contracts"},
-  {val:total2024.toLocaleString(),label:"2024 Units",sub:"Contracts signed in 2024"},
-  {val:total2025.toLocaleString(),label:"2025 Units",sub:"Contracts signed in 2025"},
-  {val:Object.keys(stateData).length,label:"Active States",sub:"States with signed deals"}
-].forEach(s=>{
-  const card=document.createElement("div");
+  {val:total2024.toLocaleString(),label:"2024 Units",sub:"Contracts signed"},
+  {val:total2025.toLocaleString(),label:"2025 Units",sub:"Contracts signed"},
+  {val:total2026.toLocaleString(),label:"2026 Units",sub:"Contracts signed"}
+].forEach(function(s){
+  var card=document.createElement("div");
   card.className="stat-card";
   card.innerHTML='<div class="stat-val">'+s.val+'</div><div class="stat-label">'+s.label+'</div><div class="stat-sub">'+s.sub+'</div>';
   statsEl.appendChild(card);
 });
 
-const svg=d3.select("#map");
-const tooltip=document.getElementById("tooltip");
-const mapArea=document.getElementById("mapArea");
-const path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1200).translate([480,300]));
+var svg=d3.select("#map");
+var tooltip=document.getElementById("tooltip");
+var mapArea=document.getElementById("mapArea");
+var path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1200).translate([480,300]));
 
-// Stripe patterns for split states
-const defs=svg.append("defs");
-
-// TX: Wells (dark teal) + John (light teal)
-const txPat=defs.append("pattern").attr("id","pat-TX").attr("patternUnits","userSpaceOnUse").attr("width",8).attr("height",8).attr("patternTransform","rotate(45)");
+var defs=svg.append("defs");
+var txPat=defs.append("pattern").attr("id","pat-TX").attr("patternUnits","userSpaceOnUse").attr("width",8).attr("height",8).attr("patternTransform","rotate(45)");
 txPat.append("rect").attr("width",8).attr("height",8).attr("fill","#156082");
 txPat.append("rect").attr("width",4).attr("height",8).attr("fill","#1B95B0");
-
-// FL: Scout (dark navy) + Ashtyn (orange) + Renato (dark orange)
-const flPat=defs.append("pattern").attr("id","pat-FL").attr("patternUnits","userSpaceOnUse").attr("width",12).attr("height",12).attr("patternTransform","rotate(45)");
+var flPat=defs.append("pattern").attr("id","pat-FL").attr("patternUnits","userSpaceOnUse").attr("width",12).attr("height",12).attr("patternTransform","rotate(45)");
 flPat.append("rect").attr("width",12).attr("height",12).attr("fill","#2D3654");
 flPat.append("rect").attr("width",4).attr("height",12).attr("fill","#E67E22");
 flPat.append("rect").attr("x",4).attr("width",4).attr("height",12).attr("fill","#D35400");
 
-d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
-  const states=topojson.feature(us,us.objects.states).features;
-
+d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us){
+  var states=topojson.feature(us,us.objects.states).features;
   svg.selectAll("path.state-path").data(states).enter().append("path")
     .attr("d",path).attr("class","state-path")
-    .attr("fill",d=>{
-      const a=FIPS[d.id];
+    .attr("fill",function(d){
+      var a=FIPS[d.id];
       if(a==="TX")return"url(#pat-TX)";
       if(a==="FL")return"url(#pat-FL)";
       return getColor(a)||"#DDD";
     })
     .on("mousemove",function(event,d){
-      const a=FIPS[d.id];
+      var a=FIPS[d.id];
       tooltip.innerHTML=getTooltip(a);
       tooltip.style.opacity=1;
-      const rect=mapArea.getBoundingClientRect();
-      let left=event.clientX-rect.left+14;
-      let top=event.clientY-rect.top-40;
-      // Keep tooltip in view
-      const tw=tooltip.offsetWidth;
-      if(left+tw>rect.width-10) left=event.clientX-rect.left-tw-14;
-      if(top<0) top=event.clientY-rect.top+20;
+      var rect=mapArea.getBoundingClientRect();
+      var left=event.clientX-rect.left+14;
+      var top=event.clientY-rect.top-40;
+      var tw=tooltip.offsetWidth;
+      if(left+tw>rect.width-10)left=event.clientX-rect.left-tw-14;
+      if(top<0)top=event.clientY-rect.top+20;
       tooltip.style.left=left+"px";
       tooltip.style.top=top+"px";
     })
-    .on("mouseleave",()=>{tooltip.style.opacity=0;});
+    .on("mouseleave",function(){tooltip.style.opacity=0;});
 
-  // State borders
   svg.append("path")
-    .datum(topojson.mesh(us,us.objects.states,(a,b)=>a!==b))
+    .datum(topojson.mesh(us,us.objects.states,function(a,b){return a!==b;}))
     .attr("fill","none").attr("stroke","#fff").attr("stroke-width",.7).attr("d",path);
 
-  // State labels
-  const smallSt=new Set(["NH","VT","MA","RI","CT","NJ","DE","MD","DC"]);
-  const offsets={"FL":[12,8],"LA":[0,6],"MI":[12,-8],"HI":[-20,12],"ID":[0,4],"CA":[-4,0]};
-  const centroids={};
-  states.forEach(d=>{const a=FIPS[d.id];if(a&&a!=="PR"){const c=path.centroid(d);if(c[0]&&c[1])centroids[a]=c;}});
+  var smallSt=new Set(["NH","VT","MA","RI","CT","NJ","DE","MD","DC"]);
+  var offsets={"FL":[12,8],"LA":[0,6],"MI":[12,-8],"HI":[-20,12],"ID":[0,4],"CA":[-4,0]};
+  var centroids={};
+  states.forEach(function(d){var a=FIPS[d.id];if(a&&a!=="PR"){var c=path.centroid(d);if(c[0]&&c[1])centroids[a]=c;}});
 
-  let calloutY=130;
-  Object.entries(centroids).forEach(([abbr,c])=>{
-    const off=offsets[abbr]||[0,0];
+  var calloutY=130;
+  Object.entries(centroids).forEach(function(entry){
+    var abbr=entry[0],c=entry[1];
+    var off=offsets[abbr]||[0,0];
     if(smallSt.has(abbr)){
-      const tx=912;const ty=calloutY;calloutY+=16;
+      var tx=912,ty=calloutY;calloutY+=16;
       svg.append("line").attr("x1",c[0]).attr("y1",c[1]).attr("x2",tx-4).attr("y2",ty)
         .attr("stroke","#BBB").attr("stroke-width",.4);
       svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",1.8)
@@ -274,7 +249,7 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
         .attr("font-family","DM Sans,sans-serif").attr("font-size","8px").attr("font-weight","600")
         .attr("fill","#555").attr("text-anchor","start").text(abbr);
     } else {
-      const isYellow=abbr!=="TX"&&abbr!=="FL"&&repColors[stateAssignments[abbr]]==="#F1C40F";
+      var isYellow=abbr!=="TX"&&abbr!=="FL"&&repColors[stateAssignments[abbr]]==="#F1C40F";
       svg.append("text").attr("x",c[0]+off[0]).attr("y",c[1]+off[1]+3)
         .attr("font-family","DM Sans,sans-serif").attr("font-size","9px").attr("font-weight","600")
         .attr("fill",isYellow?"#15192D":"#fff")
@@ -286,13 +261,12 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
   });
 });
 
-// Legend
-const leg=document.getElementById("leg");
-const legendItems=[
+var leg=document.getElementById("leg");
+var legendItems=[
   {name:"Jack Thomasson",color:"#1A61D9",label:"TN, KY, MS, LA, OK, AL, AR"},
   {name:"Wells Davis",color:"#156082",label:"TX (DFW & Austin)",split:true,color2:"#1B95B0",name2:"John LaVanway",label2:"TX (Houston & SA)"},
   {name:"Scout Bishop",color:"#2D3654",label:"GA, VA, MD, DC, MT, WY, AK, WV, FL*"},
-  {name:"Ashtyn Garner",color:"#E67E22",label:"FL — Fort Lauderdale",split:true,color2:"#D35400",name2:"Renato Lagomarsino",label2:"FL — Miami"},
+  {name:"Ashtyn Garner",color:"#E67E22",label:"FL \u2014 Fort Lauderdale",split:true,color2:"#D35400",name2:"Renato Lagomarsino",label2:"FL \u2014 Miami"},
   {name:"Sophia Nadler",color:"#8E44AD",label:"NC, SC, WA, OR, ID"},
   {name:"Richard Baugh",color:"#27AE60",label:"IL, OH, WI, ND, SD, IN, MN, MI"},
   {name:"Raegan Harris",color:"#C0392B",label:"CA, NV, NM, AZ, HI"},
@@ -300,18 +274,12 @@ const legendItems=[
   {name:"Nolan Moran",color:"#F1C40F",label:"CO, UT, IA, KS, NE, MO"}
 ];
 
-legendItems.forEach(r=>{
-  const d=document.createElement("div");d.className="li";
+legendItems.forEach(function(r){
+  var d=document.createElement("div");d.className="li";
   if(r.split){
-    d.innerHTML=`
-      <div class="ld" style="background:${r.color}"></div>
-      <span class="ln">${r.name}</span><span class="ls">${r.label}</span>
-      <span style="color:#CCC;margin:0 4px">/</span>
-      <div class="ld" style="background:${r.color2}"></div>
-      <span class="ln">${r.name2}</span><span class="ls">${r.label2}</span>
-    `;
+    d.innerHTML='<div class="ld" style="background:'+r.color+'"></div><span class="ln">'+r.name+'</span><span class="ls">'+r.label+'</span><span style="color:#CCC;margin:0 4px">/</span><div class="ld" style="background:'+r.color2+'"></div><span class="ln">'+r.name2+'</span><span class="ls">'+r.label2+'</span>';
   } else {
-    d.innerHTML=`<div class="ld" style="background:${r.color}"></div><span class="ln">${r.name}</span><span class="ls">${r.label}</span>`;
+    d.innerHTML='<div class="ld" style="background:'+r.color+'"></div><span class="ln">'+r.name+'</span><span class="ls">'+r.label+'</span>';
   }
   leg.appendChild(d);
 });
