@@ -12,10 +12,25 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 .hdr p{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px}
 .hdr-r{font-size:12px;font-weight:700;color:#1A61D9;letter-spacing:1.5px;text-transform:uppercase}
 .map-area{padding:24px 36px 8px;position:relative}
-#tooltip{position:absolute;background:#15192D;color:#fff;padding:10px 16px;border-radius:6px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.5}
+#tooltip{position:absolute;background:#15192D;color:#fff;padding:12px 18px;border-radius:8px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.6;max-width:340px}
 #tooltip strong{color:#7EB5F5}
+#tooltip .tt-rep{color:#fff;font-weight:600;margin-bottom:4px}
+#tooltip .tt-divider{border-top:1px solid rgba(255,255,255,0.12);margin:6px 0}
+#tooltip .tt-market{display:flex;justify-content:space-between;gap:16px;font-size:10.5px;color:rgba(255,255,255,0.8)}
+#tooltip .tt-market-name{color:#fff;font-weight:500}
+#tooltip .tt-units{color:#7EB5F5;font-weight:600;text-align:right}
+#tooltip .tt-total{display:flex;justify-content:space-between;gap:16px;font-size:11px;font-weight:700;color:#fff;margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.12)}
 .state-path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .15s}
 .state-path:hover{opacity:.82;stroke-width:1.5}
+
+/* Stats bar */
+.stats{display:flex;justify-content:center;gap:0;padding:0 36px;border-bottom:1px solid #ECEDF0}
+.stat-card{flex:1;text-align:center;padding:20px 16px;position:relative}
+.stat-card:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:#ECEDF0}
+.stat-val{font-size:28px;font-weight:700;color:#15192D;letter-spacing:-0.5px}
+.stat-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.stat-sub{font-size:10px;color:#BBB;margin-top:2px}
+
 .leg{padding:14px 36px 24px;display:flex;flex-wrap:wrap;gap:0;justify-content:center;border-top:1px solid #ECEDF0}
 .li{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:6px;transition:background .15s}
 .li:hover{background:#F5F6F8}
@@ -35,6 +50,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
     <div id="tooltip"></div>
     <svg id="map" viewBox="0 0 960 620"></svg>
   </div>
+  <div class="stats" id="stats"></div>
   <div class="leg" id="leg"></div>
   <div class="footnote">
     States with diagonal stripes indicate shared coverage between multiple reps.<br>
@@ -79,24 +95,114 @@ const stateAssignments={
 
 const splitStates={
   "TX":{
-    tooltip:"<strong>TX</strong><br>Wells Davis — DFW & Austin<br>John LaVanway — Houston & San Antonio"
+    reps:"Wells Davis — DFW & Austin / John LaVanway — Houston & San Antonio"
   },
   "FL":{
-    tooltip:"<strong>FL</strong><br>Scout Bishop — Statewide (excl. FtL & Miami)<br>Ashtyn Garner — Fort Lauderdale<br>Renato Lagomarsino — Miami"
+    reps:"Scout Bishop — Statewide (excl. FtL & Miami) / Ashtyn Garner — Fort Lauderdale / Renato Lagomarsino — Miami"
   }
 };
 
+// Market data from Launch Dashboard — Import of new deals tab
+const stateData={
+  "AL":{markets:{"Birmingham":{2024:65,2025:10},"Huntsville":{2024:48,2025:76}}},
+  "AZ":{markets:{"Phoenix":{2024:49,2025:66},"Tucson":{2024:9,2025:10}}},
+  "AR":{markets:{"Little Rock":{2025:9}}},
+  "CA":{markets:{"San Diego":{2025:17}}},
+  "CO":{markets:{"Denver":{2024:14,2025:48},"Fort Collins":{2024:10,2025:15}}},
+  "DC":{markets:{"Washington":{2024:75,2025:53}}},
+  "FL":{markets:{"Cape Coral":{2024:35},"Daytona Beach":{2025:5},"Fort Lauderdale":{2024:11,2025:4},"Fort Myers":{2024:15,2025:68},"Gainesville":{2024:43,2025:14},"Jacksonville":{2024:55,2025:50},"Melbourne":{2024:43,2025:10},"Miami":{2024:15},"Orlando":{2024:35,2025:50},"Port Charlotte":{2024:35},"Sarasota":{2024:15,2025:15},"St. Petersburg":{2024:55,2025:25},"Tampa":{2024:32,2025:5},"West Palm Beach":{2024:59},"Wildwood":{2025:15},"Vero Beach":{2025:5},"Saint Augustine":{2025:5}}},
+  "GA":{markets:{"Atlanta":{2024:80,2025:120},"Savannah":{2024:10,2025:13}}},
+  "IL":{markets:{"Chicago":{2024:44,2025:19}}},
+  "IN":{markets:{"Indianapolis":{2024:49,2025:50},"Fort Wayne":{2025:11}}},
+  "KS":{markets:{"Kansas City":{2024:7,2025:20}}},
+  "LA":{markets:{"Baton Rouge":{2024:10},"New Orleans":{2025:10}}},
+  "MD":{markets:{"Baltimore":{2025:14}}},
+  "MA":{markets:{"Boston":{2025:10}}},
+  "MI":{markets:{"Detroit":{2024:30,2025:10}}},
+  "MO":{markets:{"Kansas City":{2024:7},"St. Louis":{2024:37,2025:58},"Springfield":{2025:5}}},
+  "NC":{markets:{"Asheville":{2025:20},"Charlotte":{2024:30,2025:120},"Raleigh":{2024:34,2025:115},"Wilmington":{2024:26,2025:20}}},
+  "NV":{markets:{"Las Vegas":{2024:41,2025:68},"Reno":{2024:5,2025:5}}},
+  "NY":{markets:{"New York":{2024:10,2025:25},"Ithaca":{2025:16},"Buffalo":{2025:10}}},
+  "OH":{markets:{"Cincinnati":{2024:20},"Cleveland":{2024:56},"Columbus":{2024:13,2025:20}}},
+  "OK":{markets:{"Oklahoma City":{2024:10},"Tulsa":{2024:15,2025:5}}},
+  "OR":{markets:{"Portland":{2024:29,2025:15}}},
+  "PA":{markets:{"Philadelphia":{2024:32,2025:31},"Pittsburgh":{2025:5}}},
+  "SC":{markets:{"Charleston":{2024:68,2025:52},"Greenville":{2024:5,2025:15}}},
+  "TN":{markets:{"Chattanooga":{2025:10},"Dayton":{2024:10},"Knoxville":{2025:10},"Memphis":{2024:50,2025:43},"Nashville":{2024:41,2025:53}}},
+  "TX":{markets:{"Austin":{2024:162,2025:145},"Dallas":{2024:95,2025:173},"Fort Worth":{2024:85,2025:75},"Houston":{2024:107,2025:152},"San Antonio":{2024:97,2025:135}}},
+  "UT":{markets:{"Salt Lake City":{2024:32,2025:28}}},
+  "VA":{markets:{"Richmond":{2024:45,2025:5},"Norfolk":{2025:5}}},
+  "WA":{markets:{"Seattle":{2024:4,2025:5}}},
+  "WI":{markets:{"Milwaukee":{2025:7}}}
+};
+
+// Compute totals
+let grandTotal=0, total2024=0, total2025=0;
+const stateTotals={};
+Object.entries(stateData).forEach(([st,d])=>{
+  let stTotal=0;
+  Object.values(d.markets).forEach(m=>{
+    const u24=m[2024]||0, u25=m[2025]||0;
+    total2024+=u24; total2025+=u25;
+    stTotal+=u24+u25;
+  });
+  stateTotals[st]=stTotal;
+  grandTotal+=stTotal;
+});
+
 function getColor(abbr){
-  if(splitStates[abbr])return null; // handled by pattern
+  if(splitStates[abbr])return null;
   const rep=stateAssignments[abbr];
   return rep?repColors[rep]:"#DDD";
 }
 
 function getTooltip(abbr){
-  if(splitStates[abbr])return splitStates[abbr].tooltip;
+  const data=stateData[abbr];
+  const isSplit=!!splitStates[abbr];
   const rep=stateAssignments[abbr];
-  return rep?`<strong>${abbr}</strong> — ${rep}`:`<strong>${abbr}</strong> — Unassigned`;
+
+  // Rep line
+  let html='<div class="tt-rep"><strong>'+abbr+'</strong>';
+  if(isSplit){
+    html+='</div><div style="font-size:10.5px;color:rgba(255,255,255,0.85);line-height:1.5">';
+    splitStates[abbr].reps.split(' / ').forEach(r=>{html+=r+'<br>';});
+    html+='</div>';
+  } else {
+    html+=' — '+(rep||'Unassigned')+'</div>';
+  }
+
+  // Market data
+  if(data && Object.keys(data.markets).length>0){
+    html+='<div class="tt-divider"></div>';
+    const sorted=Object.entries(data.markets).sort((a,b)=>{
+      const ta=(a[1][2024]||0)+(a[1][2025]||0);
+      const tb=(b[1][2024]||0)+(b[1][2025]||0);
+      return tb-ta;
+    });
+    sorted.forEach(([market,units])=>{
+      const total=(units[2024]||0)+(units[2025]||0);
+      html+='<div class="tt-market"><span class="tt-market-name">'+market+'</span><span class="tt-units">'+total.toLocaleString()+' units</span></div>';
+    });
+    const stTotal=stateTotals[abbr]||0;
+    html+='<div class="tt-total"><span>Total</span><span>'+stTotal.toLocaleString()+' units</span></div>';
+  }
+
+  return html;
 }
+
+// Stats bar
+const statsEl=document.getElementById("stats");
+[
+  {val:grandTotal.toLocaleString(),label:"Total Units",sub:"All contracts"},
+  {val:total2024.toLocaleString(),label:"2024 Units",sub:"Contracts signed in 2024"},
+  {val:total2025.toLocaleString(),label:"2025 Units",sub:"Contracts signed in 2025"},
+  {val:Object.keys(stateData).length,label:"Active States",sub:"States with signed deals"}
+].forEach(s=>{
+  const card=document.createElement("div");
+  card.className="stat-card";
+  card.innerHTML='<div class="stat-val">'+s.val+'</div><div class="stat-label">'+s.label+'</div><div class="stat-sub">'+s.sub+'</div>';
+  statsEl.appendChild(card);
+});
 
 const svg=d3.select("#map");
 const tooltip=document.getElementById("tooltip");
@@ -133,8 +239,14 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
       tooltip.innerHTML=getTooltip(a);
       tooltip.style.opacity=1;
       const rect=mapArea.getBoundingClientRect();
-      tooltip.style.left=(event.clientX-rect.left+14)+"px";
-      tooltip.style.top=(event.clientY-rect.top-40)+"px";
+      let left=event.clientX-rect.left+14;
+      let top=event.clientY-rect.top-40;
+      // Keep tooltip in view
+      const tw=tooltip.offsetWidth;
+      if(left+tw>rect.width-10) left=event.clientX-rect.left-tw-14;
+      if(top<0) top=event.clientY-rect.top+20;
+      tooltip.style.left=left+"px";
+      tooltip.style.top=top+"px";
     })
     .on("mouseleave",()=>{tooltip.style.opacity=0;});
 
