@@ -59,7 +59,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 <body>
 <div class="wrap">
   <div class="hdr">
-    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales &mdash; March 2026</p></div>
+    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales &mdash; April 2026</p></div>
     <div class="hdr-r">Landing</div>
   </div>
   <div class="map-area" id="mapArea">
@@ -70,7 +70,7 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
   <div class="leg" id="leg"></div>
   <div class="footnote">
     States with diagonal stripes indicate shared coverage between multiple reps.<br>
-    TX: Wells Davis (DFW &amp; Austin) / John LaVanway (Houston &amp; San Antonio)<br>
+    TX: Wells Davis (DFW &amp; Austin) / Ghislain Cossio (Houston &amp; San Antonio)<br>
     FL: Scout Bishop (statewide excl. Fort Lauderdale &amp; Miami) / Ashtyn Garner (Fort Lauderdale) / Renato Lagomarsino (Miami)
   </div>
 </div>
@@ -81,29 +81,29 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 var FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
 
 var repColors={
-  "Jack Thomasson":"#1A61D9","Wells Davis":"#156082","John LaVanway":"#1B95B0",
+  "Jack Thomasson":"#1A61D9","Wells Davis":"#156082","Ghislain Cossio":"#1B95B0",
   "Scout Bishop":"#2D3654","Ashtyn Garner":"#E67E22","Renato Lagomarsino":"#D35400",
   "Sophia Nadler":"#8E44AD","Richard Baugh":"#27AE60","Raegan Harris":"#C0392B",
-  "Ghislain Cossio":"#7D3C98","Nolan Moran":"#F1C40F"
+  "Cameron Copeland":"#7D3C98","Nolan Moran":"#F1C40F"
 };
 
 var stateAssignments={
   "AL":"Jack Thomasson","AK":"Scout Bishop","AZ":"Raegan Harris","AR":"Jack Thomasson",
-  "CA":"Raegan Harris","CO":"Nolan Moran","CT":"Ghislain Cossio","DE":"Ghislain Cossio",
+  "CA":"Raegan Harris","CO":"Nolan Moran","CT":"Cameron Copeland","DE":"Sophia Nadler",
   "DC":"Scout Bishop","GA":"Scout Bishop","HI":"Raegan Harris","ID":"Sophia Nadler",
-  "IL":"Richard Baugh","IN":"Richard Baugh","IA":"Nolan Moran","KS":"Nolan Moran",
-  "KY":"Jack Thomasson","LA":"Jack Thomasson","ME":"Ghislain Cossio","MD":"Scout Bishop",
-  "MA":"Ghislain Cossio","MI":"Richard Baugh","MN":"Richard Baugh","MS":"Jack Thomasson",
+  "IL":"Richard Baugh","IN":"Cameron Copeland","IA":"Nolan Moran","KS":"Nolan Moran",
+  "KY":"Jack Thomasson","LA":"Jack Thomasson","ME":"Sophia Nadler","MD":"Scout Bishop",
+  "MA":"Sophia Nadler","MI":"Cameron Copeland","MN":"Cameron Copeland","MS":"Jack Thomasson",
   "MO":"Nolan Moran","MT":"Scout Bishop","NE":"Nolan Moran","NV":"Raegan Harris",
-  "NH":"Ghislain Cossio","NJ":"Ghislain Cossio","NM":"Raegan Harris","NY":"Ghislain Cossio",
+  "NH":"Sophia Nadler","NJ":"Cameron Copeland","NM":"Raegan Harris","NY":"Richard Baugh",
   "NC":"Sophia Nadler","ND":"Richard Baugh","OH":"Richard Baugh","OK":"Jack Thomasson",
-  "OR":"Sophia Nadler","PA":"Ghislain Cossio","RI":"Ghislain Cossio","SC":"Sophia Nadler",
-  "SD":"Richard Baugh","TN":"Jack Thomasson","UT":"Nolan Moran","VT":"Ghislain Cossio",
-  "VA":"Scout Bishop","WA":"Sophia Nadler","WV":"Scout Bishop","WI":"Richard Baugh","WY":"Scout Bishop"
+  "OR":"Sophia Nadler","PA":"Cameron Copeland","RI":"Sophia Nadler","SC":"Sophia Nadler",
+  "SD":"Richard Baugh","TN":"Jack Thomasson","UT":"Nolan Moran","VT":"Sophia Nadler",
+  "VA":"Scout Bishop","WA":"Sophia Nadler","WV":"Cameron Copeland","WI":"Richard Baugh","WY":"Scout Bishop"
 };
 
 var splitStates={
-  "TX":{reps:"Wells Davis \u2014 DFW & Austin / John LaVanway \u2014 Houston & San Antonio",repNames:["Wells Davis","John LaVanway"]},
+  "TX":{reps:"Wells Davis \u2014 DFW & Austin / Ghislain Cossio \u2014 Houston & San Antonio",repNames:["Wells Davis","Ghislain Cossio"]},
   "FL":{reps:"Scout Bishop \u2014 Statewide (excl. FtL & Miami) / Ashtyn Garner \u2014 Fort Lauderdale / Renato Lagomarsino \u2014 Miami",repNames:["Scout Bishop","Ashtyn Garner","Renato Lagomarsino"]}
 };
 
@@ -326,13 +326,13 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
 var leg=document.getElementById("leg");
 var legendItems=[
   {name:"Jack Thomasson",color:"#1A61D9",label:"TN, KY, MS, LA, OK, AL, AR"},
-  {name:"Wells Davis",color:"#156082",label:"TX (DFW & Austin)",split:true,color2:"#1B95B0",name2:"John LaVanway",label2:"TX (Houston & SA)"},
-  {name:"Scout Bishop",color:"#2D3654",label:"GA, VA, MD, DC, MT, WY, AK, WV, FL*"},
+  {name:"Wells Davis",color:"#156082",label:"TX (DFW & Austin)",split:true,color2:"#1B95B0",name2:"Ghislain Cossio",label2:"TX (Houston & SA)"},
+  {name:"Scout Bishop",color:"#2D3654",label:"GA, VA, MD, DC, MT, WY, AK, FL*"},
   {name:"Ashtyn Garner",color:"#E67E22",label:"FL \u2014 Fort Lauderdale",split:true,color2:"#D35400",name2:"Renato Lagomarsino",label2:"FL \u2014 Miami"},
-  {name:"Sophia Nadler",color:"#8E44AD",label:"NC, SC, WA, OR, ID"},
-  {name:"Richard Baugh",color:"#27AE60",label:"IL, OH, WI, ND, SD, IN, MN, MI"},
+  {name:"Sophia Nadler",color:"#8E44AD",label:"NC, SC, WA, OR, ID, MA, DE, RI, NH, VT, ME"},
+  {name:"Richard Baugh",color:"#27AE60",label:"IL, OH, WI, ND, SD, NY"},
+  {name:"Cameron Copeland",color:"#7D3C98",label:"IN, MN, MI, WV, CT, PA, NJ"},
   {name:"Raegan Harris",color:"#C0392B",label:"CA, NV, NM, AZ, HI"},
-  {name:"Ghislain Cossio",color:"#7D3C98",label:"NY, CT, PA, NJ, MA, DE, RI, NH, VT, ME"},
   {name:"Nolan Moran",color:"#F1C40F",label:"CO, UT, IA, KS, NE, MO"}
 ];
 
