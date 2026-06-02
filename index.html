@@ -2,9 +2,6 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A61D9'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='20' fill='white'%3EL%3C/text%3E%3C/svg%3E">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Territory Assignments — Landing Autopilot Sales</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -14,352 +11,175 @@ body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-co
 .hdr h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
 .hdr p{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px}
 .hdr-r{font-size:12px;font-weight:700;color:#1A61D9;letter-spacing:1.5px;text-transform:uppercase}
+.badge{display:inline-block;font-size:9px;font-weight:700;color:#15192D;background:#F1C40F;padding:2px 7px;border-radius:4px;letter-spacing:.5px;margin-left:8px;vertical-align:middle}
 .map-area{padding:24px 36px 8px;position:relative}
-#tooltip{position:absolute;background:#15192D;color:#fff;padding:12px 18px;border-radius:8px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.6;max-width:400px}
+#tooltip{position:absolute;background:#15192D;color:#fff;padding:10px 16px;border-radius:6px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.5}
 #tooltip strong{color:#7EB5F5}
-#tooltip .tt-rep{color:#fff;font-weight:600;margin-bottom:4px}
-#tooltip .tt-divider{border-top:1px solid rgba(255,255,255,0.12);margin:6px 0}
-#tooltip .tt-market{display:flex;justify-content:space-between;gap:12px;font-size:10.5px;color:rgba(255,255,255,0.8)}
-#tooltip .tt-market-name{color:#fff;font-weight:500}
-#tooltip .tt-units{color:#7EB5F5;font-weight:600;text-align:right;white-space:nowrap}
-#tooltip .tt-total{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:700;color:#fff;margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.12)}
-#tooltip .tt-yr-hdr{display:flex;justify-content:space-between;gap:12px;font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px}
-#tooltip .tt-no-deals{font-size:10.5px;color:rgba(255,255,255,0.45);font-style:italic;margin-top:4px}
-.state-path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .2s,stroke-width .15s}
-.state-path:hover{stroke-width:1.5}
-.state-path.dimmed{opacity:.18}
-.stats{display:flex;justify-content:center;gap:0;padding:0 36px;border-bottom:1px solid #ECEDF0}
-.stat-card{flex:1;text-align:center;padding:20px 16px;position:relative}
-.stat-card:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:#ECEDF0}
-.stat-val{font-size:28px;font-weight:700;color:#15192D;letter-spacing:-0.5px}
-.stat-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
-.stat-sub{font-size:10px;color:#BBB;margin-top:2px}
-.leg{padding:14px 36px 24px;display:flex;flex-wrap:wrap;gap:0;justify-content:center;border-top:1px solid #ECEDF0}
-.li{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:6px;transition:background .15s;cursor:pointer;user-select:none}
-.li:hover{background:#F5F6F8}
-.li.active{background:#EEF2FF;box-shadow:0 0 0 1.5px #1A61D9}
-.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-.ln{font-size:11px;font-weight:600;color:#2D3654}
-.ls{font-size:10px;color:#999;margin-left:1px}
+.state-path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .15s}
+.state-path:hover{opacity:.82;stroke-width:1.5}
+.leg{padding:18px 28px 24px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;border-top:1px solid #ECEDF0}
+.card{display:flex;flex-direction:column;gap:1px;padding:11px 15px;border-radius:9px;background:#F7F8FA;min-width:148px}
+.card-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.card-h .ld{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.card-h .region{font-size:11.5px;font-weight:700;color:#2D3654}
+.roster{font-size:10.5px;color:#5A6478;line-height:1.65}
+.roster .nm{font-weight:600;color:#2D3654}
+.roster .role{color:#A8AEBC;font-weight:500;margin-left:3px}
+.note{font-size:9.5px;color:#1A61D9;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.3px}
 .footnote{text-align:center;padding:0 36px 20px;font-size:10px;color:#AAA;line-height:1.6}
-@media(max-width:700px){
-  body{padding:12px}
-  .hdr{padding:16px 20px}
-  .hdr h1{font-size:16px}
-  .map-area{padding:12px 12px 4px}
-  .stats{padding:0 16px;flex-wrap:wrap}
-  .stat-card{min-width:50%;padding:14px 8px}
-  .stat-card:nth-child(2)::after{display:none}
-  .stat-val{font-size:22px}
-  .leg{padding:10px 16px 18px}
-  .footnote{padding:0 16px 14px}
-}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="hdr">
-    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales &mdash; April 2026</p></div>
+    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales — Pod Coverage, June 2026</p></div>
     <div class="hdr-r">Landing</div>
   </div>
   <div class="map-area" id="mapArea">
     <div id="tooltip"></div>
     <svg id="map" viewBox="0 0 960 620"></svg>
   </div>
-  <div class="stats" id="stats"></div>
   <div class="leg" id="leg"></div>
   <div class="footnote">
-    States with diagonal stripes indicate shared coverage between multiple reps.<br>
-    TX: Wells Davis (DFW &amp; Austin) / Ghislain Cossio (Houston &amp; San Antonio)<br>
-    FL: Scout Bishop (statewide excl. Fort Lauderdale &amp; Miami) / Ashtyn Garner (Fort Lauderdale) / Renato Lagomarsino (Miami)
+    Diagonal stripes indicate shared coverage between two pods.<br>
+    TX: Wells/Cam (North / Dallas) &amp; G/Raegan (South).
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
-var FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
+const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
 
-var repColors={
-  "Jack Thomasson":"#1A61D9","Wells Davis":"#156082","Ghislain Cossio":"#1B95B0",
-  "Scout Bishop":"#2D3654","Ashtyn Garner":"#E67E22","Renato Lagomarsino":"#D35400",
-  "Sophia Nadler":"#8E44AD","Richard Baugh":"#27AE60","Raegan Harris":"#C0392B",
-  "Cameron Copeland":"#7D3C98","Nolan Moran":"#F1C40F"
+const podColors={
+  "Jack / Brady":"#1A61D9",
+  "Wells / Cam":"#156082",
+  "Scout / Renato":"#E67E22",
+  "X / Richard":"#27AE60",
+  "G / Raegan":"#7D3C98",
+  "Jack H / Nolan":"#9AA3B2"
 };
 
-var stateAssignments={
-  "AL":"Jack Thomasson","AK":"Scout Bishop","AZ":"Raegan Harris","AR":"Jack Thomasson",
-  "CA":"Raegan Harris","CO":"Nolan Moran","CT":"Cameron Copeland","DE":"Sophia Nadler",
-  "DC":"Scout Bishop","GA":"Scout Bishop","HI":"Raegan Harris","ID":"Sophia Nadler",
-  "IL":"Richard Baugh","IN":"Cameron Copeland","IA":"Nolan Moran","KS":"Nolan Moran",
-  "KY":"Jack Thomasson","LA":"Jack Thomasson","ME":"Sophia Nadler","MD":"Scout Bishop",
-  "MA":"Sophia Nadler","MI":"Cameron Copeland","MN":"Cameron Copeland","MS":"Jack Thomasson",
-  "MO":"Nolan Moran","MT":"Scout Bishop","NE":"Nolan Moran","NV":"Raegan Harris",
-  "NH":"Sophia Nadler","NJ":"Cameron Copeland","NM":"Raegan Harris","NY":"Richard Baugh",
-  "NC":"Sophia Nadler","ND":"Richard Baugh","OH":"Richard Baugh","OK":"Jack Thomasson",
-  "OR":"Sophia Nadler","PA":"Cameron Copeland","RI":"Sophia Nadler","SC":"Sophia Nadler",
-  "SD":"Richard Baugh","TN":"Jack Thomasson","UT":"Nolan Moran","VT":"Sophia Nadler",
-  "VA":"Scout Bishop","WA":"Sophia Nadler","WV":"Cameron Copeland","WI":"Richard Baugh","WY":"Scout Bishop"
+const stateAssignments={
+  "AK":"X / Richard","HI":"X / Richard",
+  "AL":"Scout / Renato","AZ":"X / Richard","AR":"Wells / Cam",
+  "CA":"X / Richard","CO":"X / Richard","CT":"G / Raegan","DE":"G / Raegan",
+  "DC":"G / Raegan","FL":"Scout / Renato","GA":"Scout / Renato",
+  "ID":"X / Richard","IL":"Jack / Brady","IN":"Jack / Brady","IA":"Jack / Brady",
+  "KS":"Wells / Cam","KY":"Jack / Brady","LA":"Jack / Brady","ME":"G / Raegan",
+  "MD":"G / Raegan","MA":"G / Raegan","MI":"Jack / Brady","MN":"Jack / Brady",
+  "MS":"Jack / Brady","MO":"Wells / Cam","MT":"X / Richard","NE":"Jack / Brady",
+  "NV":"X / Richard","NH":"G / Raegan","NJ":"G / Raegan","NM":"Wells / Cam",
+  "NY":"G / Raegan","ND":"Jack / Brady","OH":"Jack / Brady","OK":"Wells / Cam",
+  "OR":"X / Richard","PA":"G / Raegan","RI":"G / Raegan","SD":"Jack / Brady",
+  "TN":"Jack / Brady","UT":"X / Richard","VT":"G / Raegan","WA":"X / Richard",
+  "WV":"Jack / Brady","WI":"Jack / Brady","WY":"X / Richard",
+  "VA":"Jack / Brady","NC":"Jack / Brady","SC":"Jack / Brady"
 };
 
-var splitStates={
-  "TX":{reps:"Wells Davis \u2014 DFW & Austin / Ghislain Cossio \u2014 Houston & San Antonio",repNames:["Wells Davis","Ghislain Cossio"]},
-  "FL":{reps:"Scout Bishop \u2014 Statewide (excl. FtL & Miami) / Ashtyn Garner \u2014 Fort Lauderdale / Renato Lagomarsino \u2014 Miami",repNames:["Scout Bishop","Ashtyn Garner","Renato Lagomarsino"]}
+const splitStates={
+  "TX":{
+    tooltip:"<strong>TX</strong><br>Wells / Cam — North TX (Dallas)<br>G / Raegan — South TX"
+  }
 };
-
-var stateData={
-  "AL":{markets:{"Birmingham":{2024:75,2025:10,2026:5},"Huntsville":{2024:50,2025:81,2026:95},"Mobile":{2024:10},"Orange Beach":{2025:5}}},
-  "AR":{markets:{"Little Rock":{2025:41}}},
-  "AZ":{markets:{"Phoenix":{2024:49,2025:91,2026:29},"Tucson":{2024:9,2025:15},"Mesa":{2025:10}}},
-  "CA":{markets:{"San Diego":{2025:17},"Los Angeles":{2025:15}}},
-  "CO":{markets:{"Denver":{2024:21,2025:80,2026:20},"Fort Collins":{2024:10,2025:15},"Colorado Springs":{2025:25}}},
-  "CT":{markets:{"Hartford":{2025:28,2026:5},"New Haven":{2025:16,2026:18},"Stratford":{2025:2}}},
-  "DC":{markets:{"Washington":{2024:75,2025:91,2026:61}}},
-  "FL":{markets:{"Cape Coral":{2024:35},"Daytona Beach":{2025:10},"Fort Lauderdale":{2024:21,2025:9,2026:3},"Fort Myers":{2024:15,2025:79,2026:31},"Gainesville":{2024:43,2025:18},"Jacksonville":{2024:70,2025:45,2026:10},"Melbourne":{2024:43,2025:23,2026:13},"Miami":{2024:22,2025:35,2026:20},"Orlando":{2024:40,2025:73,2026:43},"Port Charlotte":{2024:35},"Sarasota":{2024:15,2025:35},"St. Petersburg":{2024:70,2025:20},"Tampa":{2024:32,2025:10,2026:17},"West Palm Beach":{2024:59},"Wildwood":{2025:15},"Pensacola":{2025:23,2026:15},"Lakeland":{2025:20},"Naples":{2026:20},"Tallahassee":{2026:10},"Vero Beach":{2025:5},"Ocala":{2025:12},"Saint Augustine":{2025:5}}},
-  "GA":{markets:{"Atlanta":{2024:64,2025:151,2026:10},"Savannah":{2024:15,2025:36,2026:15},"Rome":{2025:5}}},
-  "IL":{markets:{"Chicago":{2024:38,2025:21,2026:10}}},
-  "IN":{markets:{"Indianapolis":{2024:49,2025:70,2026:13},"Fort Wayne":{2025:11}}},
-  "KS":{markets:{"Kansas City":{2024:7,2025:20},"Wichita":{2025:5}}},
-  "KY":{markets:{"Louisville":{2026:8}}},
-  "LA":{markets:{"Baton Rouge":{2024:10},"New Orleans":{2025:15}}},
-  "MA":{markets:{"Boston":{2025:10},"Springfield":{2025:5}}},
-  "MD":{markets:{"Baltimore":{2025:19,2026:5},"Columbia":{2026:5}}},
-  "MI":{markets:{"Detroit":{2024:40,2025:13}}},
-  "MO":{markets:{"Kansas City":{2024:7,2025:20},"St. Louis":{2024:59,2025:78},"Springfield":{2025:10}}},
-  "MT":{markets:{"Bozeman":{2025:5},"Billings":{2025:10}}},
-  "NC":{markets:{"Asheville":{2025:20,2026:10},"Charlotte":{2024:30,2025:152,2026:6},"Raleigh":{2024:31,2025:95,2026:8},"Wilmington":{2024:36,2025:20,2026:5},"Hickory":{2026:10}}},
-  "NV":{markets:{"Las Vegas":{2024:49,2025:62,2026:5},"Reno":{2024:10,2025:5}}},
-  "NY":{markets:{"New York":{2024:10,2025:25,2026:15},"Ithaca":{2025:16},"Buffalo":{2025:10},"Albany":{2025:5}}},
-  "OH":{markets:{"Cincinnati":{2024:30,2025:10},"Cleveland":{2024:56,2025:10,2026:3},"Columbus":{2024:13,2025:33}}},
-  "OK":{markets:{"Oklahoma City":{2024:10,2025:16},"Tulsa":{2024:15,2025:31}}},
-  "OR":{markets:{"Portland":{2024:43,2025:35}}},
-  "PA":{markets:{"Philadelphia":{2024:22,2025:26,2026:9},"Pittsburgh":{2025:5,2026:5}}},
-  "SC":{markets:{"Charleston":{2024:63,2025:37},"Greenville":{2024:45,2025:25,2026:3},"Myrtle Beach":{2025:55,2026:5}}},
-  "TN":{markets:{"Chattanooga":{2025:10,2026:8},"Knoxville":{2025:30},"Memphis":{2024:50,2025:68},"Nashville":{2024:47,2025:93,2026:28},"Dayton":{2024:10}}},
-  "TX":{markets:{"Austin":{2024:138,2025:260,2026:55},"Dallas":{2024:85,2025:259,2026:62},"Fort Worth":{2024:95,2025:67,2026:32},"Houston":{2024:137,2025:236,2026:68},"San Antonio":{2024:77,2025:170,2026:30},"Corpus Christi":{2025:20}}},
-  "UT":{markets:{"Salt Lake City":{2024:37,2025:35,2026:15}}},
-  "VA":{markets:{"Richmond":{2024:64,2025:15},"Norfolk":{2025:10},"Charlottesville":{2025:8}}},
-  "WA":{markets:{"Seattle":{2024:6,2025:44},"Richland":{2025:5}}},
-  "WI":{markets:{"Milwaukee":{2025:13}}}
-};
-
-var grandTotal=0,total2024=0,total2025=0,total2026=0;
-var stateTotals={};
-Object.entries(stateData).forEach(function(e){
-  var st=e[0],d=e[1],stTotal=0;
-  Object.values(d.markets).forEach(function(m){
-    var u24=m[2024]||0,u25=m[2025]||0,u26=m[2026]||0;
-    total2024+=u24;total2025+=u25;total2026+=u26;
-    stTotal+=u24+u25+u26;
-  });
-  stateTotals[st]=stTotal;
-  grandTotal+=stTotal;
-});
 
 function getColor(abbr){
-  if(splitStates[abbr])return null;
-  var rep=stateAssignments[abbr];
-  return rep?repColors[rep]:"#DDD";
-}
-
-function getRepForState(abbr){
-  if(splitStates[abbr])return splitStates[abbr].repNames;
-  return stateAssignments[abbr]?[stateAssignments[abbr]]:[];
+  if(splitStates[abbr])return null; // handled by pattern
+  const pod=stateAssignments[abbr];
+  return pod?podColors[pod]:"#DDD";
 }
 
 function getTooltip(abbr){
-  var data=stateData[abbr];
-  var isSplit=!!splitStates[abbr];
-  var rep=stateAssignments[abbr];
-  var html='<div class="tt-rep"><strong>'+abbr+'</strong>';
-  if(isSplit){
-    html+='</div><div style="font-size:10.5px;color:rgba(255,255,255,0.85);line-height:1.5">';
-    splitStates[abbr].reps.split(' / ').forEach(function(r){html+=r+'<br>';});
-    html+='</div>';
-  } else {
-    html+=' \u2014 '+(rep||'Unassigned')+'</div>';
-  }
-  if(data&&Object.keys(data.markets).length>0){
-    html+='<div class="tt-divider"></div>';
-    html+='<div class="tt-yr-hdr"><span>Market</span><span>\'24 / \'25 / \'26</span></div>';
-    var sorted=Object.entries(data.markets).sort(function(a,b){
-      var ta=(a[1][2024]||0)+(a[1][2025]||0)+(a[1][2026]||0);
-      var tb=(b[1][2024]||0)+(b[1][2025]||0)+(b[1][2026]||0);
-      return tb-ta;
-    });
-    sorted.forEach(function(entry){
-      var market=entry[0],units=entry[1];
-      var u24=units[2024]||0,u25=units[2025]||0,u26=units[2026]||0;
-      var parts=[];
-      parts.push(u24?u24.toLocaleString():'\u2013');
-      parts.push(u25?u25.toLocaleString():'\u2013');
-      parts.push(u26?u26.toLocaleString():'\u2013');
-      html+='<div class="tt-market"><span class="tt-market-name">'+market+'</span><span class="tt-units">'+parts.join(' / ')+'</span></div>';
-    });
-    var stTotal=stateTotals[abbr]||0;
-    html+='<div class="tt-total"><span>Total</span><span>'+stTotal.toLocaleString()+' units</span></div>';
-  } else {
-    html+='<div class="tt-no-deals">No active deals</div>';
-  }
-  return html;
+  if(splitStates[abbr])return splitStates[abbr].tooltip;
+  const pod=stateAssignments[abbr];
+  return pod?`<strong>${abbr}</strong> — ${pod}`:`<strong>${abbr}</strong> — Unassigned`;
 }
 
-// Stats bar
-var statsEl=document.getElementById("stats");
-[
-  {val:grandTotal.toLocaleString(),label:"Total Units",sub:"All contracts"},
-  {val:total2024.toLocaleString(),label:"2024 Units",sub:"Contracts signed"},
-  {val:total2025.toLocaleString(),label:"2025 Units",sub:"Contracts signed"},
-  {val:total2026.toLocaleString(),label:"2026 Units",sub:"Contracts signed"}
-].forEach(function(s){
-  var card=document.createElement("div");
-  card.className="stat-card";
-  card.innerHTML='<div class="stat-val">'+s.val+'</div><div class="stat-label">'+s.label+'</div><div class="stat-sub">'+s.sub+'</div>';
-  statsEl.appendChild(card);
-});
+const svg=d3.select("#map");
+const tooltip=document.getElementById("tooltip");
+const mapArea=document.getElementById("mapArea");
+const path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1200).translate([480,300]));
 
-var svg=d3.select("#map");
-var tooltip=document.getElementById("tooltip");
-var mapArea=document.getElementById("mapArea");
-var path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1200).translate([480,300]));
-
-var defs=svg.append("defs");
-var txPat=defs.append("pattern").attr("id","pat-TX").attr("patternUnits","userSpaceOnUse").attr("width",8).attr("height",8).attr("patternTransform","rotate(45)");
+// Stripe pattern for shared TX: Wells/Cam (teal) + G/Raegan (purple)
+const defs=svg.append("defs");
+const txPat=defs.append("pattern").attr("id","pat-TX").attr("patternUnits","userSpaceOnUse").attr("width",8).attr("height",8).attr("patternTransform","rotate(45)");
 txPat.append("rect").attr("width",8).attr("height",8).attr("fill","#156082");
-txPat.append("rect").attr("width",4).attr("height",8).attr("fill","#1B95B0");
-var flPat=defs.append("pattern").attr("id","pat-FL").attr("patternUnits","userSpaceOnUse").attr("width",12).attr("height",12).attr("patternTransform","rotate(45)");
-flPat.append("rect").attr("width",12).attr("height",12).attr("fill","#2D3654");
-flPat.append("rect").attr("width",4).attr("height",12).attr("fill","#E67E22");
-flPat.append("rect").attr("x",4).attr("width",4).attr("height",12).attr("fill","#D35400");
+txPat.append("rect").attr("width",4).attr("height",8).attr("fill","#7D3C98");
 
-// Legend highlight state
-var activeRep=null;
+d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
+  const states=topojson.feature(us,us.objects.states).features;
 
-function highlightRep(repName){
-  if(activeRep===repName){
-    activeRep=null;
-    svg.selectAll("path.state-path").classed("dimmed",false);
-    document.querySelectorAll(".li").forEach(function(el){el.classList.remove("active");});
-    return;
-  }
-  activeRep=repName;
-  svg.selectAll("path.state-path").classed("dimmed",function(d){
-    var a=FIPS[d.id];
-    var reps=getRepForState(a);
-    return reps.indexOf(repName)===-1;
-  });
-  document.querySelectorAll(".li").forEach(function(el){el.classList.remove("active");});
-}
-
-function showTooltip(abbr,event){
-  tooltip.innerHTML=getTooltip(abbr);
-  tooltip.style.opacity=1;
-  var rect=mapArea.getBoundingClientRect();
-  var left=event.clientX-rect.left+14;
-  var top=event.clientY-rect.top-40;
-  var tw=tooltip.offsetWidth;
-  if(left+tw>rect.width-10)left=event.clientX-rect.left-tw-14;
-  if(top<0)top=event.clientY-rect.top+20;
-  tooltip.style.left=left+"px";
-  tooltip.style.top=top+"px";
-}
-
-d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us){
-  var states=topojson.feature(us,us.objects.states).features;
   svg.selectAll("path.state-path").data(states).enter().append("path")
     .attr("d",path).attr("class","state-path")
-    .attr("fill",function(d){
-      var a=FIPS[d.id];
+    .attr("fill",d=>{
+      const a=FIPS[d.id];
       if(a==="TX")return"url(#pat-TX)";
-      if(a==="FL")return"url(#pat-FL)";
       return getColor(a)||"#DDD";
     })
     .on("mousemove",function(event,d){
-      showTooltip(FIPS[d.id],event);
+      const a=FIPS[d.id];
+      tooltip.innerHTML=getTooltip(a);
+      tooltip.style.opacity=1;
+      const rect=mapArea.getBoundingClientRect();
+      tooltip.style.left=(event.clientX-rect.left+14)+"px";
+      tooltip.style.top=(event.clientY-rect.top-40)+"px";
     })
-    .on("mouseleave",function(){tooltip.style.opacity=0;})
-    .on("touchstart",function(event,d){
-      event.preventDefault();
-      var touch=event.touches[0];
-      showTooltip(FIPS[d.id],{clientX:touch.clientX,clientY:touch.clientY});
-    })
-    .on("touchend",function(){
-      setTimeout(function(){tooltip.style.opacity=0;},2000);
-    });
+    .on("mouseleave",()=>{tooltip.style.opacity=0;});
 
+  // State borders
   svg.append("path")
-    .datum(topojson.mesh(us,us.objects.states,function(a,b){return a!==b;}))
+    .datum(topojson.mesh(us,us.objects.states,(a,b)=>a!==b))
     .attr("fill","none").attr("stroke","#fff").attr("stroke-width",.7).attr("d",path);
 
-  var smallSt=new Set(["NH","VT","MA","RI","CT","NJ","DE","MD","DC"]);
-  var offsets={"FL":[12,8],"LA":[0,6],"MI":[12,-8],"HI":[-20,12],"ID":[0,4],"CA":[-4,0]};
-  var centroids={};
-  states.forEach(function(d){var a=FIPS[d.id];if(a&&a!=="PR"){var c=path.centroid(d);if(c[0]&&c[1])centroids[a]=c;}});
+  // State labels
+  const smallSt=new Set(["NH","VT","MA","RI","CT","NJ","DE","MD","DC"]);
+  const offsets={"FL":[12,8],"LA":[0,6],"MI":[12,-8],"HI":[-20,12],"ID":[0,4],"CA":[-4,0]};
+  const centroids={};
+  states.forEach(d=>{const a=FIPS[d.id];if(a&&a!=="PR"){const c=path.centroid(d);if(c[0]&&c[1])centroids[a]=c;}});
 
-  var calloutY=130;
-  Object.entries(centroids).forEach(function(entry){
-    var abbr=entry[0],c=entry[1];
-    var off=offsets[abbr]||[0,0];
+  let calloutY=130;
+  Object.entries(centroids).forEach(([abbr,c])=>{
+    const off=offsets[abbr]||[0,0];
     if(smallSt.has(abbr)){
-      var tx=912,ty=calloutY;calloutY+=16;
+      const tx=912;const ty=calloutY;calloutY+=16;
       svg.append("line").attr("x1",c[0]).attr("y1",c[1]).attr("x2",tx-4).attr("y2",ty)
         .attr("stroke","#BBB").attr("stroke-width",.4);
       svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",1.8)
-        .attr("fill",getColor(abbr)||"#7D3C98").attr("stroke","#fff").attr("stroke-width",.5);
+        .attr("fill",getColor(abbr)||"#DDD").attr("stroke","#fff").attr("stroke-width",.5);
       svg.append("text").attr("x",tx).attr("y",ty+3)
         .attr("font-family","DM Sans,sans-serif").attr("font-size","8px").attr("font-weight","600")
         .attr("fill","#555").attr("text-anchor","start").text(abbr);
     } else {
-      var isYellow=abbr!=="TX"&&abbr!=="FL"&&repColors[stateAssignments[abbr]]==="#F1C40F";
+      const unassigned=abbr!=="TX"&&!stateAssignments[abbr];
       svg.append("text").attr("x",c[0]+off[0]).attr("y",c[1]+off[1]+3)
         .attr("font-family","DM Sans,sans-serif").attr("font-size","9px").attr("font-weight","600")
-        .attr("fill",isYellow?"#15192D":"#fff")
+        .attr("fill",unassigned?"#15192D":"#fff")
         .attr("text-anchor","middle")
         .style("pointer-events","none")
-        .style("text-shadow",isYellow?"none":"0 1px 2px rgba(0,0,0,.35)")
+        .style("text-shadow",unassigned?"none":"0 1px 2px rgba(0,0,0,.35)")
         .text(abbr);
     }
   });
 });
 
-// Legend
-var leg=document.getElementById("leg");
-var legendItems=[
-  {name:"Jack Thomasson",color:"#1A61D9",label:"TN, KY, MS, LA, OK, AL, AR"},
-  {name:"Wells Davis",color:"#156082",label:"TX (DFW & Austin)",split:true,color2:"#1B95B0",name2:"Ghislain Cossio",label2:"TX (Houston & SA)"},
-  {name:"Scout Bishop",color:"#2D3654",label:"GA, VA, MD, DC, MT, WY, AK, FL*"},
-  {name:"Ashtyn Garner",color:"#E67E22",label:"FL \u2014 Fort Lauderdale",split:true,color2:"#D35400",name2:"Renato Lagomarsino",label2:"FL \u2014 Miami"},
-  {name:"Sophia Nadler",color:"#8E44AD",label:"NC, SC, WA, OR, ID, MA, DE, RI, NH, VT, ME"},
-  {name:"Richard Baugh",color:"#27AE60",label:"IL, OH, WI, ND, SD, NY"},
-  {name:"Cameron Copeland",color:"#7D3C98",label:"IN, MN, MI, WV, CT, PA, NJ"},
-  {name:"Raegan Harris",color:"#C0392B",label:"CA, NV, NM, AZ, HI"},
-  {name:"Nolan Moran",color:"#F1C40F",label:"CO, UT, IA, KS, NE, MO"}
+// Legend — roster cards (AE / BDR I / BDR II per pod)
+const leg=document.getElementById("leg");
+const pods=[
+  {color:"#1A61D9",region:"Central + Carolinas/VA",ae:"Jack",bdr1:"Brady",bdr2:"Dan"},
+  {color:"#156082",region:"N. TX, NM, OK, KS, MO, AR",ae:"Wells",bdr1:"Cam",bdr2:"Chandler"},
+  {color:"#E67E22",region:"AL, GA, FL",ae:"Scout",bdr1:"Renato",bdr2:"Jaycie"},
+  {color:"#27AE60",region:"West of Rockies + AK/HI",ae:"X",bdr1:"Richard",bdr2:"Blake"},
+  {color:"#7D3C98",region:"S. TX + Northeast",ae:"G",bdr1:"Raegan",bdr2:"Jennie"},
+  {color:"#9AA3B2",region:"Top NMHC — national",ae:"Jack H",bdr1:"Nolan",note:"Focus: Top NMHC owners"}
 ];
 
-legendItems.forEach(function(r){
-  var d=document.createElement("div");d.className="li";
-  if(r.split){
-    d.innerHTML='<div class="ld" style="background:'+r.color+'"></div><span class="ln">'+r.name+'</span><span class="ls">'+r.label+'</span><span style="color:#CCC;margin:0 4px">/</span><div class="ld" style="background:'+r.color2+'"></div><span class="ln">'+r.name2+'</span><span class="ls">'+r.label2+'</span>';
-    d.addEventListener("click",function(e){
-      var clickedName=r.name;
-      var target=e.target;
-      if(target.classList.contains("ln")){
-        clickedName=target.textContent;
-      } else if(target.previousElementSibling&&target.previousElementSibling.classList.contains("ln")){
-        clickedName=target.previousElementSibling.textContent;
-      }
-      if(clickedName!==r.name&&clickedName!==r.name2)clickedName=r.name;
-      highlightRep(clickedName);
-      d.classList.toggle("active",activeRep===clickedName||activeRep===r.name||activeRep===r.name2);
-    });
-  } else {
-    d.innerHTML='<div class="ld" style="background:'+r.color+'"></div><span class="ln">'+r.name+'</span><span class="ls">'+r.label+'</span>';
-    d.addEventListener("click",function(){
-      highlightRep(r.name);
-      d.classList.toggle("active",activeRep===r.name);
-    });
-  }
-  leg.appendChild(d);
+pods.forEach(p=>{
+  const card=document.createElement("div");card.className="card";
+  let roster=`<div class="roster"><span class="nm">${p.ae}</span><span class="role">AE</span></div>`;
+  if(p.bdr1)roster+=`<div class="roster"><span class="nm">${p.bdr1}</span><span class="role">BDR I</span></div>`;
+  if(p.bdr2)roster+=`<div class="roster"><span class="nm">${p.bdr2}</span><span class="role">BDR II</span></div>`;
+  card.innerHTML=`<div class="card-h"><div class="ld" style="background:${p.color}"></div><span class="region">${p.region}</span></div>${roster}${p.note?`<div class="note">${p.note}</div>`:""}`;
+  leg.appendChild(card);
 });
 </script>
 </body>
