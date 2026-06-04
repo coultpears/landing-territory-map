@@ -38,7 +38,13 @@ export default async (request, context) => {
   const cookie = request.headers.get("cookie") || "";
   const m = cookie.match(/(?:^|;\s*)ltm_auth=([^;]+)/);
   if (expected && m && decodeURIComponent(m[1]) === expected) {
-    return context.next();
+    // Authenticated: serve the map but mark it no-store so the protected
+    // content is never retained by browsers or the CDN (also disables
+    // back/forward-cache reuse that could skip the gate).
+    const res = await context.next();
+    const out = new Response(res.body, res);
+    out.headers.set("Cache-Control", "no-store, max-age=0");
+    return out;
   }
 
   // Login submission
