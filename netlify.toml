@@ -1,0 +1,6 @@
+# Password gate for the territory map. The edge function checks the MAP_PASSWORD
+# site env var (set in Netlify, not stored here). Deploying this repo requires
+# Deno installed locally for the CLI to bundle the edge function.
+[[edge_functions]]
+  path = "/*"
+  function = "auth"
