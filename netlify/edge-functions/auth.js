@@ -36,6 +36,22 @@ export default async (request, context) => {
 
   // Already authenticated?
   const cookie = request.headers.get("cookie") || "";
+
+  // If Netlify's NATIVE password protection is enabled, the platform gate runs
+  // before this edge function and only forwards requests that already carry its
+  // session cookie (named with the site id). When that cookie is present the
+  // visitor has already authenticated with Netlify — passing through here avoids
+  // a second password prompt. (When native protection is OFF, no such cookie
+  // exists and we fall through to our own gate below, so the site is always
+  // protected by exactly one prompt.)
+  const siteId = (context.site && context.site.id) || "f3d1ee79-2909-4abd-bdd8-c2667d508da9";
+  if (siteId && cookie.includes(siteId + "=")) {
+    const res = await context.next();
+    const out = new Response(res.body, res);
+    out.headers.set("Cache-Control", "no-store, max-age=0");
+    return out;
+  }
+
   const m = cookie.match(/(?:^|;\s*)ltm_auth=([^;]+)/);
   if (expected && m && decodeURIComponent(m[1]) === expected) {
     // Authenticated: serve the map but mark it no-store so the protected
