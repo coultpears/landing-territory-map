@@ -1,185 +1,604 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Territory Assignments — Landing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+:root{
+  --ink:#070912; --text:#ECEEF6; --dim:#9CA4BE; --faint:#646D8B;
+  --panel:rgba(255,255,255,0.04); --panel-2:rgba(255,255,255,0.065);
+  --line:rgba(255,255,255,0.09); --line-2:rgba(255,255,255,0.15);
+  --gold:#E7BD5E; --accent:#5B92FF; --unassigned:#1C2138;
+  --green:#33C277; --red:#F26d63;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:#F0F1F3;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:32px}
-.wrap{max-width:1100px;width:100%;background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 20px rgba(21,25,45,0.07)}
-.hdr{background:#15192D;padding:24px 36px;display:flex;align-items:center;justify-content:space-between}
-.hdr h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
-.hdr p{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px}
-.hdr-r{font-size:12px;font-weight:700;color:#1A61D9;letter-spacing:1.5px;text-transform:uppercase}
-.badge{display:inline-block;font-size:9px;font-weight:700;color:#15192D;background:#F1C40F;padding:2px 7px;border-radius:4px;letter-spacing:.5px;margin-left:8px;vertical-align:middle}
-.map-area{padding:24px 36px 8px;position:relative}
-#tooltip{position:absolute;background:#15192D;color:#fff;padding:10px 16px;border-radius:6px;font-size:11.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.5}
-#tooltip strong{color:#7EB5F5}
-.state-path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .15s}
-.state-path:hover{opacity:.82;stroke-width:1.5}
-.leg{padding:18px 28px 24px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;border-top:1px solid #ECEDF0}
-.card{display:flex;flex-direction:column;gap:1px;padding:11px 15px;border-radius:9px;background:#F7F8FA;min-width:148px}
-.card-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.card-h .ld{width:11px;height:11px;border-radius:3px;flex-shrink:0}
-.card-h .region{font-size:11.5px;font-weight:700;color:#2D3654}
-.roster{font-size:10.5px;color:#5A6478;line-height:1.65}
-.roster .nm{font-weight:600;color:#2D3654}
-.roster .role{color:#A8AEBC;font-weight:500;margin-left:3px}
-.note{font-size:9.5px;color:#1A61D9;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.3px}
-.footnote{text-align:center;padding:0 36px 20px;font-size:10px;color:#AAA;line-height:1.6}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#070912}
+body{
+  font-family:'Hanken Grotesk',sans-serif;color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:46px 24px 70px;
+  background:
+    radial-gradient(1200px 640px at 50% -10%, rgba(91,146,255,0.17), transparent 60%),
+    radial-gradient(960px 620px at 86% 12%, rgba(164,95,196,0.11), transparent 55%),
+    radial-gradient(960px 720px at 8% 32%, rgba(30,136,168,0.11), transparent 55%),
+    linear-gradient(180deg,#0A0D1A 0%,#070912 100%);
+  background-attachment:fixed;
+}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.045;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+
+.wrap{position:relative;max-width:1160px;width:100%;
+  background:linear-gradient(180deg,rgba(21,25,44,0.74),rgba(11,14,26,0.84));
+  border:1px solid var(--line);border-radius:24px;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,0.05) inset, 0 50px 110px -40px rgba(0,0,0,0.8);
+  backdrop-filter:blur(12px);
+  opacity:0;transform:translateY(16px) scale(.99);animation:rise .95s cubic-bezier(.2,.7,.2,1) forwards;}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* Header */
+.hdr{position:relative;padding:30px 40px 26px;border-bottom:1px solid var(--line);
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  background:linear-gradient(180deg,rgba(255,255,255,0.028),transparent);}
+.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--accent);margin-bottom:11px;display:flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+.hdr h1{font-family:'Fraunces',serif;font-optical-sizing:auto;font-weight:500;font-size:40px;line-height:.96;letter-spacing:-.018em;color:#fff}
+.hdr h1 em{font-style:italic;font-weight:500;color:#C9D4FF}
+.sub{font-size:12.5px;color:var(--dim);margin-top:10px;font-weight:500}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:11px}
+.wordmark{font-family:'Fraunces',serif;font-weight:600;font-size:21px;letter-spacing:-.01em;color:#fff}
+.wordmark span{color:var(--accent)}
+.hdr-tools{display:flex;align-items:center;gap:9px}
+.pill{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  border:1px solid var(--line-2);border-radius:999px;padding:6px 13px;background:rgba(255,255,255,0.03)}
+.lockbtn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:10.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:999px;
+  padding:6px 12px;background:rgba(255,255,255,0.02);cursor:pointer;transition:.2s}
+.lockbtn:hover{color:var(--dim);border-color:var(--line-2);background:rgba(255,255,255,0.05)}
+.lockbtn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.7}
+body.editing .lockbtn{color:var(--ink);background:var(--gold);border-color:var(--gold)}
+
+/* Map */
+.map-area{position:relative;padding:18px 30px 4px}
+.map-glow{position:absolute;inset:5% 17% 15%;background:radial-gradient(ellipse at center,rgba(91,146,255,0.13),transparent 70%);filter:blur(34px);pointer-events:none}
+#map{width:100%;height:auto;display:block;position:relative;filter:drop-shadow(0 26px 40px rgba(0,0,0,0.5))}
+.state-path{stroke:#070912;stroke-width:.9;cursor:default;transition:opacity .18s,filter .18s}
+.state-path:hover{opacity:.94;filter:brightness(1.2)}
+body.editing .state-path{cursor:crosshair}
+body.editing .state-path:hover{filter:brightness(1.32) drop-shadow(0 0 6px rgba(255,255,255,.25))}
+
+/* Tooltip card */
+#tooltip{position:absolute;min-width:170px;max-width:250px;background:rgba(10,13,24,0.95);border:1px solid var(--line-2);
+  border-radius:12px;padding:12px 14px;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;
+  z-index:30;box-shadow:0 18px 44px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
+#tooltip.show{opacity:1;transform:none}
+.tt-region{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#D6DBEC;margin-bottom:9px}
+.tt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px -1px currentColor}
+.tt-m{display:flex;align-items:baseline;gap:7px;margin-bottom:5px;line-height:1.25}
+.tt-m:last-child{margin-bottom:0}
+.tt-nm{font-size:12.5px;font-weight:600;color:#F2F4FB;flex-shrink:0}
+.tt-role{font-size:9.5px;color:var(--faint);font-weight:500;margin-left:auto;text-align:right}
+.tt-tag{font-size:7.5px;font-weight:800;letter-spacing:.06em;color:#1A1405;background:var(--gold);padding:1px 4px;border-radius:3px}
+.tt-empty{font-size:11px;color:var(--faint);font-style:italic}
+.tt-part{padding-top:8px;margin-top:8px;border-top:1px solid var(--line)}
+.tt-part:first-of-type{padding-top:0;margin-top:0;border-top:none}
+.tt-part-h{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700;color:#B9C0D8;margin-bottom:6px}
+
+/* Legend */
+.leg{padding:16px 30px 8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
+.card{position:relative;border:1px solid var(--line);border-radius:15px;padding:16px 17px 15px 20px;background:var(--panel);
+  overflow:hidden;backdrop-filter:blur(6px);transition:transform .25s cubic-bezier(.2,.7,.2,1),border-color .25s,background .25s;
+  opacity:0;transform:translateY(12px);animation:cardin .6s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes cardin{to{opacity:1;transform:none}}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);box-shadow:0 0 14px -1px var(--c)}
+.card:hover{transform:translateY(-3px);border-color:var(--line-2);background:var(--panel-2)}
+.card-h{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 10px -1px var(--c);flex-shrink:0}
+.card-h .region{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#D6DBEC}
+.member{margin-bottom:9px}
+.member:last-of-type{margin-bottom:0}
+.member .nm{font-size:13.5px;font-weight:600;color:#F2F4FB;letter-spacing:-.01em}
+.member .role{display:block;font-size:10.5px;font-weight:500;color:var(--faint);margin-top:1px}
+.tag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.08em;color:#1A1405;
+  background:linear-gradient(180deg,#F0CE73,#E0AE45);padding:2px 6px;border-radius:4px;margin-left:7px;vertical-align:middle;box-shadow:0 1px 4px rgba(231,189,94,0.35)}
+.note{margin-top:11px;padding-top:9px;border-top:1px solid var(--line);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--accent);text-transform:uppercase}
+
+/* Footnote */
+.footnote{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;padding:20px 36px 26px;margin-top:8px;font-size:10.5px;color:var(--faint);line-height:1.6;text-align:center}
+.fn-key{display:inline-flex;align-items:center;gap:7px}
+.stripe-swatch{width:16px;height:11px;border-radius:3px;border:1px solid var(--line-2);background:repeating-linear-gradient(45deg,#2C92B4 0 4px,#A45FC4 4px 8px)}
+
+/* ── Admin edit mode ── */
+.editbar{display:none;align-items:center;gap:14px;flex-wrap:wrap;margin:0 30px;padding:13px 16px;
+  border:1px solid var(--line-2);border-radius:14px;background:linear-gradient(180deg,rgba(231,189,94,0.08),rgba(255,255,255,0.02));}
+body.editing .editbar{display:flex}
+.editbar .lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.brushes{display:flex;gap:7px;flex-wrap:wrap}
+.brush{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);
+  background:rgba(255,255,255,0.03);cursor:pointer;font-size:11px;font-weight:600;color:var(--dim);transition:.18s}
+.brush .bd{width:9px;height:9px;border-radius:50%;background:var(--bc)}
+.brush:hover{color:#fff;border-color:var(--line-2)}
+.brush.active{color:#fff;border-color:var(--bc);box-shadow:0 0 0 1px var(--bc),0 0 14px -4px var(--bc);background:rgba(255,255,255,0.06)}
+.editbar .spacer{flex:1}
+.ebtn{font-family:inherit;font-size:11.5px;font-weight:700;letter-spacing:.02em;border-radius:9px;padding:8px 15px;cursor:pointer;border:1px solid var(--line-2);background:rgba(255,255,255,0.04);color:var(--text);transition:.18s}
+.ebtn:hover{background:rgba(255,255,255,0.09)}
+.ebtn.primary{background:var(--gold);border-color:var(--gold);color:#1A1405}
+.ebtn.primary:hover{filter:brightness(1.06)}
+.ebtn.primary:disabled{opacity:.5;cursor:default;filter:none}
+.edit-hint{font-size:10.5px;color:var(--faint);font-weight:500}
+
+/* editable legend */
+.card.edit{padding-left:18px}
+.card.edit .region-in{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:7px;color:#D6DBEC;
+  font:600 11px/1 'Hanken Grotesk';letter-spacing:.04em;text-transform:uppercase;padding:7px 9px;margin-bottom:10px}
+.erow{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.erow input,.erow select{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:7px;color:#F2F4FB;font:500 12px 'Hanken Grotesk';padding:7px 8px}
+.erow .e-nm{flex:1;min-width:0}
+.erow .e-role{flex:1.2;min-width:0;color:var(--dim);cursor:pointer}
+.erow .e-tag{width:54px}
+.erow .e-del{flex-shrink:0;width:26px;height:30px;border:1px solid var(--line);border-radius:7px;background:rgba(242,109,99,0.08);color:var(--red);cursor:pointer;font-size:14px;line-height:1}
+.erow .e-del:hover{background:rgba(242,109,99,0.18)}
+.add-m{margin-top:4px;font:600 11px 'Hanken Grotesk';color:var(--accent);background:none;border:1px dashed var(--line-2);border-radius:7px;padding:6px 10px;cursor:pointer;width:100%}
+.add-m:hover{background:rgba(91,146,255,0.08)}
+.edit-head{display:flex;align-items:center;gap:7px;margin-bottom:11px}
+.edit-head .region-in{flex:1;width:auto;margin-bottom:0}
+.color-in{width:28px;height:30px;flex-shrink:0;padding:0;border:1px solid var(--line-2);border-radius:7px;background:none;cursor:pointer}
+.color-in::-webkit-color-swatch-wrapper{padding:3px}
+.color-in::-webkit-color-swatch{border:none;border-radius:4px}
+.color-in::-moz-color-swatch{border:none;border-radius:4px}
+.del-pod{flex-shrink:0;width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:rgba(242,109,99,0.08);color:var(--red);cursor:pointer;font-size:16px;line-height:1}
+.del-pod:hover{background:rgba(242,109,99,0.18)}
+.brush.add-brush{border-style:dashed;color:var(--accent)}
+.brush.add-brush:hover{background:rgba(91,146,255,0.1);color:#fff}
+.brush.shared-brush .bd.stripe{background:repeating-linear-gradient(45deg,#9AA3B2 0 3px,#5B92FF 3px 6px)}
+.brush.shared-brush.active{color:#fff;border-color:var(--line-2);box-shadow:0 0 0 1px var(--line-2),0 0 14px -4px var(--accent);background:rgba(255,255,255,0.06)}
+.shared-pick{display:inline-flex;align-items:center;gap:7px}
+.shared-pick select{background:rgba(255,255,255,0.05);border:1px solid var(--line-2);border-radius:7px;color:#F2F4FB;font:600 11px 'Hanken Grotesk';padding:6px 8px;cursor:pointer}
+.shared-pick select:focus{outline:none;border-color:var(--accent)}
+.shared-pick .amp{color:var(--faint);font-weight:700}
+.note-in{width:100%;margin-top:10px;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:7px;color:var(--accent);font:600 10px 'Hanken Grotesk';letter-spacing:.04em;text-transform:uppercase;padding:7px 9px}
+
+/* Admin login modal */
+.modal-bg{position:fixed;inset:0;background:rgba(5,7,14,0.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-bg.show{display:flex}
+.modal{width:320px;background:linear-gradient(180deg,#161A2C,#0E1120);border:1px solid var(--line-2);border-radius:16px;padding:26px 26px 22px;box-shadow:0 40px 90px -20px rgba(0,0,0,.8);text-align:center}
+.modal h3{font-family:'Fraunces',serif;font-weight:500;font-size:20px;color:#fff;margin-bottom:5px}
+.modal p{font-size:12px;color:var(--dim);margin-bottom:18px}
+.modal input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--line-2);border-radius:9px;color:#fff;font:500 14px 'Hanken Grotesk';padding:11px 13px;margin-bottom:11px;text-align:center;letter-spacing:.04em}
+.modal input:focus{outline:none;border-color:var(--accent)}
+.modal .merr{color:var(--red);font-size:11.5px;font-weight:600;margin-bottom:10px;min-height:15px}
+.modal .mrow{display:flex;gap:9px}
+.modal .ebtn{flex:1}
+
+/* Toast */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:#11152a;border:1px solid var(--line-2);
+  color:#fff;font-size:12.5px;font-weight:600;padding:11px 20px;border-radius:999px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:.3s cubic-bezier(.2,.7,.2,1);z-index:300;display:flex;align-items:center;gap:9px}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast .tk{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px -1px var(--green)}
+#toast.err .tk{background:var(--red)}
+
+@media(max-width:560px){.hdr{padding:24px 22px}.hdr h1{font-size:30px}.map-area,.leg{padding-left:16px;padding-right:16px}.editbar{margin:0 16px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="hdr">
-    <div><h1>Territory Assignments</h1><p>Landing Autopilot Sales — Pod Coverage, June 2026</p></div>
-    <div class="hdr-r">Landing</div>
+    <div>
+      <div class="eyebrow">Autopilot Sales · Pod Coverage</div>
+      <h1>Territory <em>Assignments</em></h1>
+      <div class="sub">Development pods &amp; national coverage — June 2026</div>
+    </div>
+    <div class="hdr-r">
+      <div class="wordmark">Landing<span>.</span></div>
+      <div class="hdr-tools">
+        <div class="pill">Effective June 2026</div>
+        <button class="lockbtn" id="lockBtn" title="Admin edit">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <span id="lockLbl">Admin</span>
+        </button>
+      </div>
+    </div>
   </div>
+
   <div class="map-area" id="mapArea">
+    <div class="map-glow"></div>
     <div id="tooltip"></div>
     <svg id="map" viewBox="0 0 960 620"></svg>
   </div>
+
+  <div class="editbar" id="editbar">
+    <span class="lbl">Brush</span>
+    <div class="brushes" id="brushes"></div>
+    <span class="shared-pick" id="sharedPick" style="display:none"><select id="sharedA"></select><span class="amp">+</span><select id="sharedB"></select></span>
+    <span class="edit-hint" id="editHint">Click a state to assign it</span>
+    <span class="spacer"></span>
+    <button class="ebtn" id="discardBtn">Discard</button>
+    <button class="ebtn primary" id="saveBtn" disabled>Save changes</button>
+  </div>
+
   <div class="leg" id="leg"></div>
+
   <div class="footnote">
-    Diagonal stripes indicate shared coverage between two pods.<br>
-    TX: Wells/Cam (North / Dallas) &amp; G/Raegan (South).
+    <span class="fn-key"><span class="stripe-swatch"></span> Diagonal stripes = shared coverage between two pods</span>
+    <span id="fnSplit"></span>
   </div>
 </div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>Admin access</h3>
+    <p>Enter the admin password to edit assignments.</p>
+    <input type="password" id="admPw" placeholder="Admin password" autocomplete="off">
+    <div class="merr" id="admErr"></div>
+    <div class="mrow">
+      <button class="ebtn" id="admCancel">Cancel</button>
+      <button class="ebtn primary" id="admGo">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><span class="tk"></span><span id="toastMsg"></span></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
 const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
+const ROLE={SDM:"Senior Development Manager",DM:"Development Manager",JDM:"Jr. Development Manager",SAS:"Strategic Accounts Specialist"};
+const ROLE_KEYS=["SDM","DM","JDM","SAS"];
+const UNASSIGNED="#1C2138";
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-const podColors={
-  "Jack / Brady":"#1A61D9",
-  "Wells / Cam":"#156082",
-  "Scout / Renato":"#E67E22",
-  "X / Richard":"#27AE60",
-  "G / Raegan":"#7D3C98",
-  "Jack H / Nolan":"#9AA3B2"
+const DEFAULT_CONFIG={
+  pods:[
+    {id:"central",color:"#3D7BEF",region:"Central + Carolinas/VA",members:[{nm:"Jack",role:"SDM"},{nm:"Brady",role:"DM"},{nm:"Dan",role:"JDM"}]},
+    {id:"southcentral",color:"#2C92B4",region:"N. TX, NM, OK, KS, MO, AR",members:[{nm:"Wells",role:"SDM"},{nm:"Cam",role:"DM"},{nm:"Chandler",role:"JDM"}]},
+    {id:"southeast",color:"#F0883C",region:"AL, GA, FL",members:[{nm:"Scout",role:"SDM"},{nm:"Renato",role:"DM"},{nm:"Jaycie",role:"JDM"}]},
+    {id:"west",color:"#33C277",region:"West of Rockies + AK/HI",members:[{nm:"X",role:"SDM"},{nm:"Richard",role:"DM"},{nm:"Blake",role:"JDM"}]},
+    {id:"northeast",color:"#A45FC4",region:"S. TX + Northeast",members:[{nm:"G",role:"SDM"},{nm:"Raegan",role:"DM"}]}
+  ],
+  national:[
+    {id:"nmhc",color:"#AEB6C6",region:"Top NMHC — national",members:[{nm:"Jack H",role:"SDM",tag:"EVP"},{nm:"Nolan",role:"SDM"}],note:"Co-sell · Focus: Top NMHC owners"},
+    {id:"strategic",color:"#6E7790",region:"Strategic Accounts — no territory",members:[{nm:"Trey D",role:"SAS"}],note:"Liaison from Mexico City"}
+  ],
+  stateAssignments:{AK:"west",HI:"west",AL:"southeast",AZ:"west",AR:"southcentral",CA:"west",CO:"west",CT:"northeast",DE:"northeast",DC:"northeast",FL:"southeast",GA:"southeast",ID:"west",IL:"central",IN:"central",IA:"central",KS:"southcentral",KY:"central",LA:"central",ME:"northeast",MD:"northeast",MA:"northeast",MI:"central",MN:"central",MS:"central",MO:"southcentral",MT:"west",NE:"central",NV:"west",NH:"northeast",NJ:"northeast",NM:"southcentral",NY:"northeast",ND:"central",OH:"central",OK:"southcentral",OR:"west",PA:"northeast",RI:"northeast",SD:"central",TN:"central",UT:"west",VT:"northeast",WA:"west",WV:"central",WI:"central",WY:"west",VA:"central",NC:"central",SC:"central"},
+  splitStates:{TX:{parts:[{podId:"southcentral",label:"North TX · Dallas"},{podId:"northeast",label:"South TX"}]}}
 };
 
-const stateAssignments={
-  "AK":"X / Richard","HI":"X / Richard",
-  "AL":"Scout / Renato","AZ":"X / Richard","AR":"Wells / Cam",
-  "CA":"X / Richard","CO":"X / Richard","CT":"G / Raegan","DE":"G / Raegan",
-  "DC":"G / Raegan","FL":"Scout / Renato","GA":"Scout / Renato",
-  "ID":"X / Richard","IL":"Jack / Brady","IN":"Jack / Brady","IA":"Jack / Brady",
-  "KS":"Wells / Cam","KY":"Jack / Brady","LA":"Jack / Brady","ME":"G / Raegan",
-  "MD":"G / Raegan","MA":"G / Raegan","MI":"Jack / Brady","MN":"Jack / Brady",
-  "MS":"Jack / Brady","MO":"Wells / Cam","MT":"X / Richard","NE":"Jack / Brady",
-  "NV":"X / Richard","NH":"G / Raegan","NJ":"G / Raegan","NM":"Wells / Cam",
-  "NY":"G / Raegan","ND":"Jack / Brady","OH":"Jack / Brady","OK":"Wells / Cam",
-  "OR":"X / Richard","PA":"G / Raegan","RI":"G / Raegan","SD":"Jack / Brady",
-  "TN":"Jack / Brady","UT":"X / Richard","VT":"G / Raegan","WA":"X / Richard",
-  "WV":"Jack / Brady","WI":"Jack / Brady","WY":"X / Richard",
-  "VA":"Jack / Brady","NC":"Jack / Brady","SC":"Jack / Brady"
-};
+let config=structuredClone(DEFAULT_CONFIG);
+let editing=false, dirty=false, adminToken=sessionStorage.getItem("ltm_admin")||null, editBrush=null, sharedA=null, sharedB=null;
+let usStates=null;
+const statePaths={}, stateLabels={}, smallDots={};
 
-const splitStates={
-  "TX":{
-    tooltip:"<strong>TX</strong><br>Wells / Cam — North TX (Dallas)<br>G / Raegan — South TX"
-  }
-};
-
-function getColor(abbr){
-  if(splitStates[abbr])return null; // handled by pattern
-  const pod=stateAssignments[abbr];
-  return pod?podColors[pod]:"#DDD";
+function podById(id){return [...config.pods,...config.national].find(p=>p.id===id)||null;}
+function colorFor(abbr){
+  if(config.splitStates[abbr])return null;
+  const pid=config.stateAssignments[abbr];
+  const p=pid&&podById(pid);
+  return p?p.color:UNASSIGNED;
 }
 
-function getTooltip(abbr){
-  if(splitStates[abbr])return splitStates[abbr].tooltip;
-  const pod=stateAssignments[abbr];
-  return pod?`<strong>${abbr}</strong> — ${pod}`:`<strong>${abbr}</strong> — Unassigned`;
-}
-
-const svg=d3.select("#map");
+/* ── Tooltip (full-roster card) ── */
 const tooltip=document.getElementById("tooltip");
 const mapArea=document.getElementById("mapArea");
-const path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1200).translate([480,300]));
+function rosterLines(pod){
+  return pod.members.map(m=>`<div class="tt-m"><span class="tt-nm">${esc(m.nm)}</span>${m.tag?`<span class="tt-tag">${esc(m.tag)}</span>`:""}<span class="tt-role">${esc(ROLE[m.role]||m.role)}</span></div>`).join("");
+}
+function tooltipHTML(abbr){
+  const split=config.splitStates[abbr];
+  if(split){
+    const parts=split.parts.map(pt=>{const pod=podById(pt.podId);if(!pod)return"";return `<div class="tt-part"><div class="tt-part-h"><span class="tt-dot" style="background:${pod.color};color:${pod.color}"></span>${esc(pt.label||pod.region)}</div>${rosterLines(pod)}</div>`;}).join("");
+    return `<div class="tt-region">${esc(abbr)} · Shared</div>${parts}`;
+  }
+  const pid=config.stateAssignments[abbr];const pod=pid&&podById(pid);
+  if(!pod)return `<div class="tt-region">${esc(abbr)}</div><div class="tt-empty">Unassigned</div>`;
+  return `<div class="tt-region"><span class="tt-dot" style="background:${pod.color};color:${pod.color}"></span>${esc(pod.region)}</div>${rosterLines(pod)}`;
+}
+function showTip(abbr,ev){
+  tooltip.innerHTML=tooltipHTML(abbr);
+  tooltip.classList.add("show");
+  const r=mapArea.getBoundingClientRect();
+  let x=ev.clientX-r.left+16, y=ev.clientY-r.top-12;
+  const tw=tooltip.offsetWidth, th=tooltip.offsetHeight;
+  if(x+tw>r.width-8)x=ev.clientX-r.left-tw-16;
+  if(y+th>r.height-4)y=r.height-th-6;
+  if(y<4)y=4;
+  tooltip.style.left=x+"px";tooltip.style.top=y+"px";
+}
+function hideTip(){tooltip.classList.remove("show");}
 
-// Stripe pattern for shared TX: Wells/Cam (teal) + G/Raegan (purple)
+/* ── Map ── */
+const svg=d3.select("#map");
+const path=d3.geoPath().projection(d3.geoAlbersUsa().scale(1230).translate([480,300]));
 const defs=svg.append("defs");
-const txPat=defs.append("pattern").attr("id","pat-TX").attr("patternUnits","userSpaceOnUse").attr("width",8).attr("height",8).attr("patternTransform","rotate(45)");
-txPat.append("rect").attr("width",8).attr("height",8).attr("fill","#156082");
-txPat.append("rect").attr("width",4).attr("height",8).attr("fill","#7D3C98");
+const defsNode=defs.node();
+const SVGNS="http://www.w3.org/2000/svg";
+function splitPatternId(abbr){return "pat-"+abbr;}
+// Build/refresh a diagonal-stripe pattern for a shared state from its two
+// pods' CURRENT colors — so changing a pod's color updates its stripes live.
+function ensureSplitPattern(abbr){
+  const sp=config.splitStates[abbr];if(!sp||!sp.parts||sp.parts.length<2)return null;
+  const a=podById(sp.parts[0].podId),b=podById(sp.parts[1].podId);
+  const ca=a?a.color:UNASSIGNED,cb=b?b.color:UNASSIGNED;
+  const id=splitPatternId(abbr);
+  let pat=document.getElementById(id);
+  if(!pat){
+    pat=document.createElementNS(SVGNS,"pattern");
+    pat.setAttribute("id",id);pat.setAttribute("patternUnits","userSpaceOnUse");
+    pat.setAttribute("width","8");pat.setAttribute("height","8");pat.setAttribute("patternTransform","rotate(45)");
+    const r1=document.createElementNS(SVGNS,"rect");r1.setAttribute("width","8");r1.setAttribute("height","8");
+    const r2=document.createElementNS(SVGNS,"rect");r2.setAttribute("width","4");r2.setAttribute("height","8");
+    pat.appendChild(r1);pat.appendChild(r2);defsNode.appendChild(pat);
+  }
+  pat.children[0].setAttribute("fill",ca);
+  pat.children[1].setAttribute("fill",cb);
+  return id;
+}
 
-d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
-  const states=topojson.feature(us,us.objects.states).features;
-
+function renderMap(){
+  const states=usStates;
   svg.selectAll("path.state-path").data(states).enter().append("path")
     .attr("d",path).attr("class","state-path")
-    .attr("fill",d=>{
-      const a=FIPS[d.id];
-      if(a==="TX")return"url(#pat-TX)";
-      return getColor(a)||"#DDD";
-    })
-    .on("mousemove",function(event,d){
-      const a=FIPS[d.id];
-      tooltip.innerHTML=getTooltip(a);
-      tooltip.style.opacity=1;
-      const rect=mapArea.getBoundingClientRect();
-      tooltip.style.left=(event.clientX-rect.left+14)+"px";
-      tooltip.style.top=(event.clientY-rect.top-40)+"px";
-    })
-    .on("mouseleave",()=>{tooltip.style.opacity=0;});
+    .attr("fill",d=>{const a=FIPS[d.id];if(config.splitStates[a]){ensureSplitPattern(a);return"url(#"+splitPatternId(a)+")";}return colorFor(a);})
+    .style("opacity",0)
+    .each(function(d){const a=FIPS[d.id];if(a)statePaths[a]=this;})
+    .on("mousemove",function(e,d){const a=FIPS[d.id];if(a&&a!=="PR")showTip(a,e);})
+    .on("mouseleave",hideTip)
+    .on("click",function(e,d){const a=FIPS[d.id];if(!editing||!a||a==="PR")return;paintState(a);})
+    .transition().duration(620).delay((d,i)=>110+i*7).style("opacity",1);
 
-  // State borders
-  svg.append("path")
-    .datum(topojson.mesh(us,us.objects.states,(a,b)=>a!==b))
-    .attr("fill","none").attr("stroke","#fff").attr("stroke-width",.7).attr("d",path);
+  svg.append("path").datum(topojson.mesh(usStates_topo,usStates_topo.objects.states,(a,b)=>a!==b))
+    .attr("fill","none").attr("stroke","rgba(7,9,18,0.9)").attr("stroke-width",.7).attr("d",path);
 
-  // State labels
   const smallSt=new Set(["NH","VT","MA","RI","CT","NJ","DE","MD","DC"]);
   const offsets={"FL":[12,8],"LA":[0,6],"MI":[12,-8],"HI":[-20,12],"ID":[0,4],"CA":[-4,0]};
   const centroids={};
   states.forEach(d=>{const a=FIPS[d.id];if(a&&a!=="PR"){const c=path.centroid(d);if(c[0]&&c[1])centroids[a]=c;}});
-
-  let calloutY=130;
+  let calloutY=132;
   Object.entries(centroids).forEach(([abbr,c])=>{
     const off=offsets[abbr]||[0,0];
     if(smallSt.has(abbr)){
-      const tx=912;const ty=calloutY;calloutY+=16;
-      svg.append("line").attr("x1",c[0]).attr("y1",c[1]).attr("x2",tx-4).attr("y2",ty)
-        .attr("stroke","#BBB").attr("stroke-width",.4);
-      svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",1.8)
-        .attr("fill",getColor(abbr)||"#DDD").attr("stroke","#fff").attr("stroke-width",.5);
-      svg.append("text").attr("x",tx).attr("y",ty+3)
-        .attr("font-family","DM Sans,sans-serif").attr("font-size","8px").attr("font-weight","600")
-        .attr("fill","#555").attr("text-anchor","start").text(abbr);
-    } else {
-      const unassigned=abbr!=="TX"&&!stateAssignments[abbr];
-      svg.append("text").attr("x",c[0]+off[0]).attr("y",c[1]+off[1]+3)
-        .attr("font-family","DM Sans,sans-serif").attr("font-size","9px").attr("font-weight","600")
-        .attr("fill",unassigned?"#15192D":"#fff")
-        .attr("text-anchor","middle")
-        .style("pointer-events","none")
-        .style("text-shadow",unassigned?"none":"0 1px 2px rgba(0,0,0,.35)")
-        .text(abbr);
+      const tx=915,ty=calloutY;calloutY+=16;
+      svg.append("line").attr("x1",c[0]).attr("y1",c[1]).attr("x2",tx-4).attr("y2",ty).attr("stroke","rgba(255,255,255,0.22)").attr("stroke-width",.5);
+      const col=colorFor(abbr);
+      smallDots[abbr]=svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",1.9).attr("fill",col===UNASSIGNED?"#3A416A":col).attr("stroke","#070912").attr("stroke-width",.6).node();
+      svg.append("text").attr("x",tx).attr("y",ty+3).attr("font-family","'Hanken Grotesk',sans-serif").attr("font-size","8.5px").attr("font-weight","700").attr("fill","#AEB6CE").attr("letter-spacing",".04em").text(abbr);
+    }else{
+      const col=colorFor(abbr);const unassigned=abbr!=="TX"&&col===UNASSIGNED;
+      const t=svg.append("text").attr("x",c[0]+off[0]).attr("y",c[1]+off[1]+3).attr("font-family","'Hanken Grotesk',sans-serif").attr("font-size","9px").attr("font-weight","700").attr("fill",unassigned?"#6B739A":"#fff").attr("text-anchor","middle").style("pointer-events","none").style("text-shadow",unassigned?"none":"0 1px 2px rgba(0,0,0,.55)").attr("letter-spacing",".02em").text(abbr);
+      stateLabels[abbr]=t.node();
     }
   });
-});
+}
+function setLabelLit(abbr){if(stateLabels[abbr]){stateLabels[abbr].setAttribute("fill","#fff");stateLabels[abbr].style.textShadow="0 1px 2px rgba(0,0,0,.55)";}}
+function paintState(abbr){
+  if(!editBrush)return;
+  // Shared mode — stripe the state between the two selected groups.
+  if(editBrush==="__shared__"){
+    if(!sharedA||!sharedB||sharedA===sharedB)return;
+    config.splitStates[abbr]={parts:[{podId:sharedA},{podId:sharedB}]};
+    delete config.stateAssignments[abbr];
+    ensureSplitPattern(abbr);
+    if(statePaths[abbr])statePaths[abbr].setAttribute("fill","url(#"+splitPatternId(abbr)+")");
+    setLabelLit(abbr);markDirty();updateFootnote();return;
+  }
+  // Solid assignment — also clears any existing split (un-stripes the state).
+  if(config.splitStates[abbr])delete config.splitStates[abbr];
+  config.stateAssignments[abbr]=editBrush;
+  const col=podById(editBrush).color;
+  if(statePaths[abbr])statePaths[abbr].setAttribute("fill",col);
+  if(smallDots[abbr])smallDots[abbr].setAttribute("fill",col);
+  setLabelLit(abbr);markDirty();updateFootnote();
+}
 
-// Legend — roster cards (AE / BDR I / BDR II per pod)
+/* ── Legend ── */
 const leg=document.getElementById("leg");
-const pods=[
-  {color:"#1A61D9",region:"Central + Carolinas/VA",ae:"Jack",bdr1:"Brady",bdr2:"Dan"},
-  {color:"#156082",region:"N. TX, NM, OK, KS, MO, AR",ae:"Wells",bdr1:"Cam",bdr2:"Chandler"},
-  {color:"#E67E22",region:"AL, GA, FL",ae:"Scout",bdr1:"Renato",bdr2:"Jaycie"},
-  {color:"#27AE60",region:"West of Rockies + AK/HI",ae:"X",bdr1:"Richard",bdr2:"Blake"},
-  {color:"#7D3C98",region:"S. TX + Northeast",ae:"G",bdr1:"Raegan",bdr2:"Jennie"},
-  {color:"#9AA3B2",region:"Top NMHC — national",ae:"Jack H",bdr1:"Nolan",note:"Focus: Top NMHC owners"}
-];
+function renderLegend(){
+  leg.innerHTML="";
+  const all=[...config.pods,...config.national];
+  all.forEach((p,i)=>{
+    const card=document.createElement("div");
+    card.className="card"+(editing?" edit":"");
+    card.style.setProperty("--c",p.color);
+    card.style.animationDelay=(0.4+i*0.06)+"s";
+    if(!editing){
+      const roster=p.members.map(m=>`<div class="member"><span class="nm">${esc(m.nm)}</span>${m.tag?`<span class="tag">${esc(m.tag)}</span>`:""}<span class="role">${esc(ROLE[m.role]||m.role)}</span></div>`).join("");
+      card.innerHTML=`<div class="card-h"><span class="dot"></span><span class="region">${esc(p.region)}</span></div>${roster}${p.note?`<div class="note">${esc(p.note)}</div>`:""}`;
+    }else{
+      const rows=p.members.map((m,mi)=>memberRow(p,mi)).join("");
+      card.innerHTML=`<div class="edit-head">
+          <input type="color" class="color-in" value="${esc(p.color)}" data-pod="${p.id}" title="Group color">
+          <input class="region-in" value="${esc(p.region)}" data-pod="${p.id}" data-f="region" placeholder="Territory name">
+          <button class="del-pod" data-pod="${p.id}" title="Delete group">&times;</button>
+        </div>
+        ${rows}
+        <button class="add-m" data-pod="${p.id}">+ Add person</button>
+        ${p.note!=null?`<input class="note-in" value="${esc(p.note)}" placeholder="Note (optional)" data-pod="${p.id}" data-f="note">`:""}`;
+    }
+    leg.appendChild(card);
+  });
+  if(editing)bindLegendInputs();
+}
+function memberRow(p,mi){
+  const m=p.members[mi];
+  const opts=ROLE_KEYS.map(k=>`<option value="${k}" ${m.role===k?"selected":""}>${ROLE[k]}</option>`).join("");
+  return `<div class="erow" data-pod="${p.id}" data-mi="${mi}">
+    <input class="e-nm" value="${esc(m.nm)}" placeholder="Name" data-f="nm">
+    <select class="e-role" data-f="role">${opts}</select>
+    <input class="e-tag" value="${esc(m.tag||"")}" placeholder="tag" data-f="tag">
+    <button class="e-del" title="Remove">×</button>
+  </div>`;
+}
+function bindLegendInputs(){
+  leg.querySelectorAll(".region-in,.note-in").forEach(inp=>{
+    inp.addEventListener("input",()=>{const p=podById(inp.dataset.pod);if(p){p[inp.dataset.f]=inp.value;markDirty();}});
+  });
+  leg.querySelectorAll(".erow").forEach(row=>{
+    const p=podById(row.dataset.pod), mi=+row.dataset.mi;
+    row.querySelectorAll("[data-f]").forEach(ctrl=>{
+      ctrl.addEventListener("input",()=>{
+        const f=ctrl.dataset.f;
+        if(f==="tag")p.members[mi].tag=ctrl.value.trim()||undefined;
+        else p.members[mi][f]=ctrl.value;
+        markDirty();
+      });
+    });
+    row.querySelector(".e-del").addEventListener("click",()=>{p.members.splice(mi,1);markDirty();renderLegend();});
+  });
+  leg.querySelectorAll(".add-m").forEach(btn=>{
+    btn.addEventListener("click",()=>{const p=podById(btn.dataset.pod);p.members.push({nm:"",role:"DM"});markDirty();renderLegend();});
+  });
+  leg.querySelectorAll(".color-in").forEach(inp=>{
+    inp.addEventListener("input",()=>{const p=podById(inp.dataset.pod);if(!p)return;p.color=inp.value;const card=inp.closest(".card");if(card)card.style.setProperty("--c",p.color);recolorAll();renderBrushes();markDirty();});
+  });
+  leg.querySelectorAll(".del-pod").forEach(btn=>{
+    btn.addEventListener("click",()=>deletePod(btn.dataset.pod));
+  });
+}
 
-pods.forEach(p=>{
-  const card=document.createElement("div");card.className="card";
-  let roster=`<div class="roster"><span class="nm">${p.ae}</span><span class="role">AE</span></div>`;
-  if(p.bdr1)roster+=`<div class="roster"><span class="nm">${p.bdr1}</span><span class="role">BDR I</span></div>`;
-  if(p.bdr2)roster+=`<div class="roster"><span class="nm">${p.bdr2}</span><span class="role">BDR II</span></div>`;
-  card.innerHTML=`<div class="card-h"><div class="ld" style="background:${p.color}"></div><span class="region">${p.region}</span></div>${roster}${p.note?`<div class="note">${p.note}</div>`:""}`;
-  leg.appendChild(card);
+/* ── Add / delete territory groups ── */
+const POD_PALETTE=["#E0556E","#46B3A8","#C98A2B","#7A6CF0","#3FA7E0","#D06BB5","#6FB23F","#E08A45","#5E9BD6","#C25BA0"];
+function nextColor(){
+  const used=new Set([...config.pods,...(config.national||[])].map(p=>(p.color||"").toLowerCase()));
+  return POD_PALETTE.find(c=>!used.has(c.toLowerCase()))||POD_PALETTE[config.pods.length%POD_PALETTE.length];
+}
+function addTerritory(){
+  const pod={id:"pod_"+Math.random().toString(36).slice(2,8),color:nextColor(),region:"New Territory",members:[{nm:"",role:"SDM"}]};
+  config.pods.push(pod);
+  editBrush=pod.id;
+  markDirty();renderBrushes();renderLegend();
+  setTimeout(()=>{const el=leg.querySelector('.region-in[data-pod="'+pod.id+'"]');if(el){el.focus();el.select();el.scrollIntoView({block:"center",behavior:"smooth"});}},40);
+}
+function deletePod(id){
+  const p=podById(id);if(!p)return;
+  const isTerr=config.pods.some(x=>x.id===id);
+  if(!confirm('Delete "'+(p.region||"this group")+'"?'+(isTerr?" Any states it covers become unassigned.":"")))return;
+  config.pods=config.pods.filter(x=>x.id!==id);
+  config.national=(config.national||[]).filter(x=>x.id!==id);
+  Object.keys(config.stateAssignments).forEach(st=>{if(config.stateAssignments[st]===id)delete config.stateAssignments[st];});
+  Object.keys(config.splitStates||{}).forEach(st=>{const sp=config.splitStates[st];if(sp&&sp.parts&&sp.parts.some(pt=>pt.podId===id))delete config.splitStates[st];});
+  if(editBrush===id)editBrush=(config.pods[0]||{}).id||null;
+  recolorAll();renderBrushes();renderLegend();updateFootnote();markDirty();
+}
+
+/* ── Brushes ── */
+function renderBrushes(){
+  const bx=document.getElementById("brushes");bx.innerHTML="";
+  config.pods.forEach(p=>{
+    const sdm=(p.members.find(m=>m.role==="SDM")||p.members[0]||{}).nm||p.region;
+    const b=document.createElement("button");b.className="brush"+(editBrush===p.id?" active":"");
+    b.style.setProperty("--bc",p.color);
+    b.innerHTML=`<span class="bd"></span>${esc(sdm)}`;
+    b.onclick=()=>{editBrush=p.id;renderBrushes();};
+    bx.appendChild(b);
+  });
+  const sh=document.createElement("button");
+  sh.className="brush shared-brush"+(editBrush==="__shared__"?" active":"");
+  sh.innerHTML='<span class="bd stripe"></span>Shared';
+  sh.onclick=()=>{editBrush="__shared__";renderBrushes();};
+  bx.appendChild(sh);
+  const add=document.createElement("button");
+  add.className="brush add-brush";add.innerHTML="&#43; New territory";
+  add.onclick=addTerritory;
+  bx.appendChild(add);
+  // Two-pod selectors + contextual hint
+  const pick=document.getElementById("sharedPick"), hint=document.getElementById("editHint");
+  if(editBrush==="__shared__"){pick.style.display="inline-flex";fillSharedSelects();if(hint)hint.textContent="Click a state to stripe it between the two groups";}
+  else{pick.style.display="none";if(hint)hint.textContent="Click a state to assign it";}
+}
+function fillSharedSelects(){
+  if(!config.pods.length)return;
+  if(!sharedA||!config.pods.some(p=>p.id===sharedA))sharedA=config.pods[0].id;
+  if(!sharedB||!config.pods.some(p=>p.id===sharedB))sharedB=(config.pods[1]||config.pods[0]).id;
+  const opts=config.pods.map(p=>`<option value="${p.id}">${esc((p.members.find(m=>m.role==="SDM")||p.members[0]||{}).nm||p.region)}</option>`).join("");
+  const A=document.getElementById("sharedA"),B=document.getElementById("sharedB");
+  A.innerHTML=opts;B.innerHTML=opts;A.value=sharedA;B.value=sharedB;
+  A.onchange=()=>{sharedA=A.value;};B.onchange=()=>{sharedB=B.value;};
+}
+
+/* ── Dirty / save ── */
+function markDirty(){dirty=true;document.getElementById("saveBtn").disabled=false;}
+function toast(msg,isErr){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.toggle("err",!!isErr);t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600);}
+
+async function saveConfig(){
+  const btn=document.getElementById("saveBtn");btn.disabled=true;btn.textContent="Saving…";
+  try{
+    const r=await fetch("/api/territory",{method:"POST",headers:{"Content-Type":"application/json","x-admin-token":adminToken||""},body:JSON.stringify(config)});
+    if(r.status===401){toast("Admin session expired — re-enter password",true);exitEdit();openModal();return;}
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    dirty=false;toast("Assignments saved · live for everyone");exitEdit();
+  }catch(e){toast("Save failed: "+e.message,true);btn.disabled=false;}
+  finally{btn.textContent="Save changes";}
+}
+
+/* ── Edit mode ── */
+function enterEdit(){editing=true;document.body.classList.add("editing");document.getElementById("lockLbl").textContent="Editing";editBrush=config.pods[0].id;renderBrushes();renderLegend();}
+function exitEdit(){editing=false;document.body.classList.remove("editing");document.getElementById("lockLbl").textContent="Admin";renderLegend();}
+
+document.getElementById("lockBtn").onclick=()=>{
+  if(editing){
+    if(dirty&&!confirm("Discard unsaved changes?"))return;
+    config=lastSaved?structuredClone(lastSaved):structuredClone(DEFAULT_CONFIG);recolorAll();exitEdit();dirty=false;document.getElementById("saveBtn").disabled=true;return;
+  }
+  if(adminToken)enterEdit(); else openModal();
+};
+document.getElementById("discardBtn").onclick=()=>{
+  if(dirty&&!confirm("Discard unsaved changes?"))return;
+  config=lastSaved?structuredClone(lastSaved):structuredClone(DEFAULT_CONFIG);recolorAll();exitEdit();dirty=false;document.getElementById("saveBtn").disabled=true;
+};
+document.getElementById("saveBtn").onclick=saveConfig;
+
+/* recolor every state from current config (after discard) */
+function recolorAll(){
+  Object.keys(statePaths).forEach(a=>{
+    if(config.splitStates[a]){ensureSplitPattern(a);statePaths[a].setAttribute("fill","url(#"+splitPatternId(a)+")");}
+    else statePaths[a].setAttribute("fill",colorFor(a));
+  });
+  Object.keys(smallDots).forEach(a=>{const c=colorFor(a);smallDots[a].setAttribute("fill",c===UNASSIGNED?"#3A416A":c);});
+}
+
+/* ── Admin modal ── */
+const modalBg=document.getElementById("modalBg");
+function openModal(){modalBg.classList.add("show");document.getElementById("admErr").textContent="";document.getElementById("admPw").value="";setTimeout(()=>document.getElementById("admPw").focus(),60);}
+function closeModal(){modalBg.classList.remove("show");}
+document.getElementById("admCancel").onclick=closeModal;
+modalBg.onclick=e=>{if(e.target===modalBg)closeModal();};
+document.getElementById("admPw").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("admGo").click();});
+document.getElementById("admGo").onclick=async()=>{
+  const pw=document.getElementById("admPw").value;const errEl=document.getElementById("admErr");errEl.textContent="";
+  if(!pw)return;
+  try{
+    const r=await fetch("/api/territory?verify=1",{headers:{"x-admin-token":pw}});
+    const j=await r.json();
+    if(j.valid){adminToken=pw;sessionStorage.setItem("ltm_admin",pw);closeModal();enterEdit();}
+    else errEl.textContent="Incorrect admin password";
+  }catch(e){errEl.textContent="Could not verify (network)";}
+};
+
+/* ── Boot ── */
+let usStates_topo=null, lastSaved=null;
+async function loadConfig(){
+  try{
+    const r=await fetch("/api/territory",{cache:"no-store"});
+    if(r.ok){const j=await r.json();if(j&&j.config&&Array.isArray(j.config.pods)){config=j.config;}}
+  }catch(e){/* fall back to DEFAULT_CONFIG */}
+  lastSaved=structuredClone(config);
+}
+function updateFootnote(){
+  const el=document.getElementById("fnSplit");
+  const splits=Object.keys(config.splitStates||{});
+  const nameOf=podId=>{const p=podById(podId);if(!p)return"?";const s=p.members.find(m=>m.role==="SDM")||p.members[0];return s&&s.nm?s.nm:p.region;};
+  el.textContent=splits.map(st=>{const sp=config.splitStates[st];if(!sp.parts||sp.parts.length<2)return"";return `${st}: ${nameOf(sp.parts[0].podId)} / ${nameOf(sp.parts[1].podId)}`;}).filter(Boolean).join("   ·   ");
+}
+Promise.all([
+  loadConfig(),
+  d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
+]).then(([_,us])=>{
+  usStates_topo=us;
+  usStates=topojson.feature(us,us.objects.states).features;
+  renderMap();renderLegend();updateFootnote();
 });
 </script>
 </body>

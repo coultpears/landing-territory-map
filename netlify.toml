@@ -4,3 +4,10 @@
 [[edge_functions]]
   path = "/*"
   function = "auth"
+
+# Serverless functions (territory config read/write, backed by Netlify Blobs).
+# The territory function routes itself to /api/territory via its v2 path config.
+# Writes require the ADMIN_PASSWORD site env var.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

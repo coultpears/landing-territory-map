@@ -1,0 +1,10 @@
+{
+  "name": "landing-territory-map",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing Autopilot Sales territory map with admin-editable rep assignments.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
