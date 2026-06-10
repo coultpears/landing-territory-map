@@ -246,12 +246,15 @@ body.editing .editbar{display:flex}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
 const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
-const ROLE={SDM:"Senior Development Manager",DM:"Development Manager",JDM:"Jr. Development Manager",SAS:"Strategic Accounts Specialist"};
-const ROLE_KEYS=["SDM","DM","JDM","SAS"];
+const DEFAULT_ROLES=[{key:"SDM",label:"Senior Development Manager"},{key:"DM",label:"Development Manager"},{key:"JDM",label:"Jr. Development Manager"},{key:"SAS",label:"Strategic Accounts Specialist"}];
+function curRoles(){return (config&&Array.isArray(config.roles)&&config.roles.length)?config.roles:DEFAULT_ROLES;}
+function roleLabel(key){const r=curRoles().find(x=>x.key===key);return r?r.label:(key||"");}
+function firstRoleKey(){return (curRoles()[0]||{}).key||"";}
 const UNASSIGNED="#1C2138";
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const DEFAULT_CONFIG={
+  roles:DEFAULT_ROLES.map(r=>({...r})),
   pods:[
     {id:"central",color:"#3D7BEF",region:"Central + Carolinas/VA",members:[{nm:"Jack",role:"SDM"},{nm:"Brady",role:"DM"},{nm:"Dan",role:"JDM"}]},
     {id:"southcentral",color:"#2C92B4",region:"N. TX, NM, OK, KS, MO, AR",members:[{nm:"Wells",role:"SDM"},{nm:"Cam",role:"DM"},{nm:"Chandler",role:"JDM"}]},
@@ -284,7 +287,7 @@ function colorFor(abbr){
 const tooltip=document.getElementById("tooltip");
 const mapArea=document.getElementById("mapArea");
 function rosterLines(pod){
-  return pod.members.map(m=>`<div class="tt-m"><span class="tt-nm">${esc(m.nm)}</span>${m.tag?`<span class="tt-tag">${esc(m.tag)}</span>`:""}<span class="tt-role">${esc(ROLE[m.role]||m.role)}</span></div>`).join("");
+  return pod.members.map(m=>`<div class="tt-m"><span class="tt-nm">${esc(m.nm)}</span>${m.tag?`<span class="tt-tag">${esc(m.tag)}</span>`:""}<span class="tt-role">${esc(roleLabel(m.role))}</span></div>`).join("");
 }
 function tooltipHTML(abbr){
   const split=config.splitStates[abbr];
@@ -397,6 +400,13 @@ function paintState(abbr){
 const leg=document.getElementById("leg");
 function renderLegend(){
   leg.innerHTML="";
+  if(editing){
+    const rc=document.createElement("div");rc.className="card edit roles-editor";
+    rc.innerHTML=`<div class="edit-head"><span style="flex:1;font-weight:700;color:#D6DBEC;font-size:13px">Roles / Titles</span></div>`
+      +curRoles().map(r=>`<div class="erow trow" data-rk="${esc(r.key)}"><input class="e-nm t-label" value="${esc(r.label)}" placeholder="Title"><button class="e-del t-del" title="Remove">×</button></div>`).join("")
+      +`<button class="add-m t-add">+ Add title</button>`;
+    leg.appendChild(rc);
+  }
   const all=[...config.pods,...config.national];
   all.forEach((p,i)=>{
     const card=document.createElement("div");
@@ -404,7 +414,7 @@ function renderLegend(){
     card.style.setProperty("--c",p.color);
     card.style.animationDelay=(0.4+i*0.06)+"s";
     if(!editing){
-      const roster=p.members.map(m=>`<div class="member"><span class="nm">${esc(m.nm)}</span>${m.tag?`<span class="tag">${esc(m.tag)}</span>`:""}<span class="role">${esc(ROLE[m.role]||m.role)}</span></div>`).join("");
+      const roster=p.members.map(m=>`<div class="member"><span class="nm">${esc(m.nm)}</span>${m.tag?`<span class="tag">${esc(m.tag)}</span>`:""}<span class="role">${esc(roleLabel(m.role))}</span></div>`).join("");
       card.innerHTML=`<div class="card-h"><span class="dot"></span><span class="region">${esc(p.region)}</span></div>${roster}${p.note?`<div class="note">${esc(p.note)}</div>`:""}`;
     }else{
       const rows=p.members.map((m,mi)=>memberRow(p,mi)).join("");
@@ -423,7 +433,7 @@ function renderLegend(){
 }
 function memberRow(p,mi){
   const m=p.members[mi];
-  const opts=ROLE_KEYS.map(k=>`<option value="${k}" ${m.role===k?"selected":""}>${ROLE[k]}</option>`).join("");
+  const opts=curRoles().map(r=>`<option value="${esc(r.key)}" ${m.role===r.key?"selected":""}>${esc(r.label)}</option>`).join("");
   return `<div class="erow" data-pod="${p.id}" data-mi="${mi}">
     <input class="e-nm" value="${esc(m.nm)}" placeholder="Name" data-f="nm">
     <select class="e-role" data-f="role">${opts}</select>
@@ -436,7 +446,7 @@ function bindLegendInputs(){
     inp.addEventListener("input",()=>{const p=podById(inp.dataset.pod);if(p){p[inp.dataset.f]=inp.value;markDirty();}});
   });
   leg.querySelectorAll(".erow").forEach(row=>{
-    const p=podById(row.dataset.pod), mi=+row.dataset.mi;
+    const p=podById(row.dataset.pod); if(!p)return; const mi=+row.dataset.mi;
     row.querySelectorAll("[data-f]").forEach(ctrl=>{
       ctrl.addEventListener("input",()=>{
         const f=ctrl.dataset.f;
@@ -448,7 +458,25 @@ function bindLegendInputs(){
     row.querySelector(".e-del").addEventListener("click",()=>{p.members.splice(mi,1);markDirty();renderLegend();});
   });
   leg.querySelectorAll(".add-m").forEach(btn=>{
-    btn.addEventListener("click",()=>{const p=podById(btn.dataset.pod);p.members.push({nm:"",role:"DM"});markDirty();renderLegend();});
+    btn.addEventListener("click",()=>{const p=podById(btn.dataset.pod);if(!p)return;p.members.push({nm:"",role:firstRoleKey()});markDirty();renderLegend();});
+  });
+  // Roles / Titles editor (self-serve)
+  leg.querySelectorAll(".trow").forEach(row=>{
+    const rk=row.dataset.rk;
+    row.querySelector(".t-label").addEventListener("input",e=>{
+      const r=curRoles().find(x=>x.key===rk);
+      if(r){r.label=e.target.value;markDirty();leg.querySelectorAll('select.e-role option[value="'+rk+'"]').forEach(o=>o.textContent=e.target.value);}
+    });
+    row.querySelector(".t-del").addEventListener("click",()=>{
+      if(curRoles().length<=1){toast("Keep at least one title",true);return;}
+      config.roles=curRoles().filter(x=>x.key!==rk);markDirty();renderLegend();
+    });
+  });
+  const addT=leg.querySelector(".t-add");
+  if(addT)addT.addEventListener("click",()=>{
+    const key="role_"+Math.random().toString(36).slice(2,7);
+    config.roles=curRoles().slice();config.roles.push({key,label:"New title"});markDirty();renderLegend();
+    setTimeout(()=>{const el=leg.querySelector('.trow[data-rk="'+key+'"] .t-label');if(el){el.focus();el.select();}},40);
   });
   leg.querySelectorAll(".color-in").forEach(inp=>{
     inp.addEventListener("input",()=>{const p=podById(inp.dataset.pod);if(!p)return;p.color=inp.value;const card=inp.closest(".card");if(card)card.style.setProperty("--c",p.color);recolorAll();renderBrushes();markDirty();});
@@ -465,7 +493,7 @@ function nextColor(){
   return POD_PALETTE.find(c=>!used.has(c.toLowerCase()))||POD_PALETTE[config.pods.length%POD_PALETTE.length];
 }
 function addTerritory(){
-  const pod={id:"pod_"+Math.random().toString(36).slice(2,8),color:nextColor(),region:"New Territory",members:[{nm:"",role:"SDM"}]};
+  const pod={id:"pod_"+Math.random().toString(36).slice(2,8),color:nextColor(),region:"New Territory",members:[{nm:"",role:firstRoleKey()}]};
   config.pods.push(pod);
   editBrush=pod.id;
   markDirty();renderBrushes();renderLegend();
@@ -584,6 +612,8 @@ async function loadConfig(){
     const r=await fetch("/api/territory",{cache:"no-store"});
     if(r.ok){const j=await r.json();if(j&&j.config&&Array.isArray(j.config.pods)){config=j.config;}}
   }catch(e){/* fall back to DEFAULT_CONFIG */}
+  // Migration: older saved configs predate editable titles — seed defaults.
+  if(!Array.isArray(config.roles)||!config.roles.length)config.roles=DEFAULT_ROLES.map(r=>({...r}));
   lastSaved=structuredClone(config);
 }
 function updateFootnote(){
